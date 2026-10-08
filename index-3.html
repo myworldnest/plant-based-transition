@@ -1,0 +1,1631 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Plant-Based Transition System</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#FAF6EC; --card:#FFFFFF; --soft:#F3EEE1; --ink:#1E2A1F; --muted:#5D6A5B; --line:#E6DFCD;
+  --green:#2F6B3A; --green-d:#245530; --green-l:#E5EFDD; --green-xl:#F1F6EC;
+  --sun:#EFAE35; --sun-l:#FCF1D8; --tomato:#D65A3C; --plum:#6B4C9E; --sky:#2E72BD;
+  --radius-lg:22px; --radius:16px; --radius-sm:10px;
+  --serif:"Young Serif", Georgia, "Times New Roman", serif;
+  --sans:"Figtree", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  box-sizing:border-box; padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#171C16; --card:#20271F; --soft:#262E24; --ink:#EEF1E8; --muted:#A9B4A4; --line:#344031;
+  --green:#7DBB82; --green-d:#94CC98; --green-l:#2A3A29; --green-xl:#222C21; --sun-l:#3A3220;
+}}
+:root[data-theme="dark"]{
+  --bg:#171C16; --card:#20271F; --soft:#262E24; --ink:#EEF1E8; --muted:#A9B4A4; --line:#344031;
+  --green:#7DBB82; --green-d:#94CC98; --green-l:#2A3A29; --green-xl:#222C21; --sun-l:#3A3220;
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased}
+h1,h2,h3{font-family:var(--serif);font-weight:400;line-height:1.15;margin:0}
+h1{font-size:clamp(1.7rem,4.5vw,2.3rem)} h2{font-size:1.35rem} h3{font-size:1.1rem}
+p{margin:.4em 0}
+a{color:var(--green)}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--sun);outline-offset:2px;border-radius:8px}
+img{max-width:100%}
+.app{display:flex;min-height:100vh;max-width:1180px;margin:0 auto}
+.side{width:250px;flex-shrink:0;padding:28px 18px;position:sticky;top:env(safe-area-inset-top,0px);height:100vh;overflow:auto;border-right:1px solid var(--line)}
+.side .brand{font-family:var(--serif);font-size:1.2rem;line-height:1.2;color:var(--green);text-decoration:none;display:flex;gap:8px;align-items:center;margin-bottom:22px}
+.side h4{font-size:.78rem;font-weight:700;color:var(--muted);margin:18px 8px 6px;letter-spacing:.02em}
+.side a.nav{display:block;padding:7px 10px;border-radius:10px;color:var(--ink);text-decoration:none;font-size:.93rem}
+.side a.nav:hover{background:var(--soft)} .side a.nav.on{background:var(--green-l);color:var(--green-d);font-weight:600}
+main{flex:1;min-width:0;padding:22px 20px 110px}
+.wrap{max-width:720px;margin:0 auto}
+.tabbar{display:none}
+@media (max-width:860px){
+  .side{display:none}
+  main{padding:14px 16px 110px}
+  .tabbar{display:flex;position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1px solid var(--line);padding:6px 4px calc(6px + env(safe-area-inset-bottom,0px));z-index:20}
+  .tabbar a{flex:1;text-align:center;text-decoration:none;color:var(--muted);font-size:.72rem;display:flex;flex-direction:column;align-items:center;gap:2px;padding:4px 0}
+  .tabbar a .ti{font-size:1.25rem;line-height:1}
+  .tabbar a.on{color:var(--green);font-weight:700}
+}
+.topbar{display:flex;align-items:center;gap:10px;margin:4px 0 14px;min-height:40px}
+.back{border:0;background:var(--card);border:1px solid var(--line);width:40px;height:40px;border-radius:50%;font-size:1.1rem;display:grid;place-items:center;flex-shrink:0}
+.topbar .crumb{color:var(--muted);font-size:.85rem}
+.lede{color:var(--muted);margin:.3em 0 1.1em;max-width:60ch}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:18px}
+.stack>*+*{margin-top:12px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:520px){.grid2.keep{grid-template-columns:1fr 1fr}.grid2:not(.keep){grid-template-columns:1fr}}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:0;border-radius:14px;padding:13px 20px;font-weight:600;background:var(--green);color:#fff;text-decoration:none;font-size:1rem}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]) .btn:not(.ghost):not(.sec){color:#132013} }
+.btn:hover{background:var(--green-d)}
+.btn.block{width:100%}
+.btn.sec{background:var(--soft);color:var(--ink);border:1px solid var(--line)}
+.btn.ghost{background:transparent;color:var(--green);padding:8px 10px}
+.btn.sm{padding:8px 13px;font-size:.9rem;border-radius:11px}
+.btn[disabled]{opacity:.5;cursor:default}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{border:1px solid var(--line);background:var(--card);border-radius:999px;padding:8px 14px;font-size:.93rem}
+.chip.on{background:var(--green);border-color:var(--green);color:#fff}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]) .chip.on{color:#132013} }
+.seg{display:flex;gap:8px;flex-wrap:wrap}
+.seg button{flex:1;min-width:56px;border:1px solid var(--line);background:var(--card);border-radius:12px;padding:12px 8px;font-weight:600}
+.seg button.on{background:var(--green);border-color:var(--green);color:#fff}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]) .seg button.on{color:#132013} }
+.opt{display:flex;align-items:center;gap:12px;width:100%;text-align:left;border:1px solid var(--line);background:var(--card);border-radius:12px;padding:12px 14px;margin-top:8px}
+.opt .dot{width:22px;height:22px;border-radius:50%;border:2px solid var(--line);flex-shrink:0;display:grid;place-items:center;font-size:.75rem;color:#fff}
+.opt.sq .dot{border-radius:6px}
+.opt.on{border-color:var(--green);background:var(--green-xl)}
+.opt.on .dot{background:var(--green);border-color:var(--green)}
+.field label,.qlabel{display:block;font-weight:600;margin-bottom:6px}
+.hint{color:var(--muted);font-size:.9rem}
+input[type=text],input[type=number],textarea,select{width:100%;border:1px solid var(--line);background:var(--card);border-radius:12px;padding:12px 14px;font-size:1rem}
+textarea{min-height:84px;resize:vertical}
+.money{position:relative}.money span{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--muted)}.money input{padding-left:28px}
+.note{background:var(--sun-l);border-radius:12px;padding:12px 14px;font-size:.9rem;display:flex;gap:10px;align-items:flex-start}
+.note .i{flex-shrink:0}
+.pill{display:inline-block;font-size:.76rem;font-weight:600;padding:3px 9px;border-radius:999px;background:var(--green-l);color:var(--green-d);margin:2px 4px 2px 0}
+.pill.warm{background:var(--sun-l);color:#7A5410}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]) .pill.warm{color:var(--sun)} }
+.plate{width:56px;height:56px;border-radius:50%;display:grid;place-items:center;font-size:1.7rem;background:var(--soft);flex-shrink:0}
+.plate.lg{width:72px;height:72px;font-size:2.2rem}
+.row{display:flex;align-items:center;gap:14px}
+.item{display:flex;gap:14px;align-items:flex-start;padding:14px;border:1px solid var(--line);background:var(--card);border-radius:var(--radius)}
+.item+.item{margin-top:10px}
+.item .body{flex:1;min-width:0}
+.item .t{font-weight:700}
+.item .d{color:var(--muted);font-size:.92rem}
+.heart{border:0;background:transparent;font-size:1.3rem;padding:4px;line-height:1;color:var(--tomato)}
+.bar{height:10px;border-radius:99px;background:var(--soft);overflow:hidden}
+.bar i{display:block;height:100%;background:var(--green);border-radius:99px;transition:width .4s}
+.progress-top{height:6px;border-radius:99px;background:var(--soft);overflow:hidden;flex:1}
+.progress-top i{display:block;height:100%;background:var(--green)}
+/* Home */
+.hero{position:relative;border-radius:var(--radius-lg);background:var(--green-xl);padding:26px 22px 22px;overflow:hidden}
+.hero h1{font-size:clamp(2rem,6vw,2.8rem);max-width:12ch;position:relative}
+.hero p{position:relative;max-width:30ch;color:var(--muted)}
+.hero .bowl{position:absolute;right:-18px;top:-10px;font-size:7.2rem;line-height:1;opacity:.95;transform:rotate(-8deg)}
+@media (max-width:420px){.hero .bowl{font-size:5.4rem;right:-14px;top:-4px}}
+.journey{margin-top:14px;background:var(--card);border-radius:var(--radius);padding:18px;border:1px solid var(--line)}
+.cats{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}
+@media (min-width:700px){.cats{grid-template-columns:1fr 1fr 1fr}}
+.cat{display:flex;gap:12px;align-items:flex-start;text-decoration:none;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:14px}
+.cat:hover{border-color:var(--green)}
+.cat .ic{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;font-size:1.3rem;flex-shrink:0}
+.cat b{display:block;font-size:.95rem;letter-spacing:.03em}
+.cat span{font-size:.84rem;color:var(--muted);line-height:1.3;display:block}
+.toolrow{display:flex;align-items:center;gap:14px;text-decoration:none;color:var(--ink);padding:14px;border:1px solid var(--line);border-radius:var(--radius);background:var(--card)}
+.toolrow+.toolrow{margin-top:10px}
+.toolrow .chev{margin-left:auto;color:var(--muted)}
+/* stages */
+.stage{display:flex;gap:14px;align-items:center;padding:14px;border:1px solid var(--line);border-radius:var(--radius);background:var(--card);text-decoration:none;color:var(--ink)}
+.stage+.stage{margin-top:10px}
+.stage .num{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;color:#fff;font-weight:700;flex-shrink:0;font-size:1.05rem}
+.stage.done{background:var(--green-xl)}
+.task{display:flex;gap:12px;align-items:flex-start;padding:12px 0;border-bottom:1px solid var(--line)}
+.task:last-child{border-bottom:0}
+.check{width:26px;height:26px;border-radius:8px;border:2px solid var(--line);background:var(--card);flex-shrink:0;display:grid;place-items:center;color:#fff;font-size:.9rem;padding:0}
+.check.on{background:var(--green);border-color:var(--green)}
+.task .tt{flex:1}
+.task.on .tt>span:first-child{color:var(--muted);text-decoration:line-through}
+/* grocery */
+.gsec h3{margin:18px 0 6px}
+.gitem{display:flex;align-items:center;gap:12px;padding:9px 0;border-bottom:1px solid var(--line)}
+.gitem .n{flex:1}
+.gitem.on .n{text-decoration:line-through;color:var(--muted)}
+.iconbtn{border:0;background:transparent;color:var(--muted);font-size:1.05rem;padding:6px;border-radius:8px}
+.iconbtn:hover{background:var(--soft)}
+.iconbtn.on{color:var(--sun)}
+.tabs{display:flex;background:var(--soft);border-radius:14px;padding:4px;gap:4px;margin-bottom:12px}
+.tabs button{flex:1;border:0;background:transparent;padding:9px;border-radius:10px;font-weight:600;color:var(--muted)}
+.tabs button.on{background:var(--green);color:#fff}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]) .tabs button.on{color:#132013} }
+.pantry3{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.pantry3 button{border:1px solid var(--line);background:var(--card);border-radius:999px;padding:5px 11px;font-size:.84rem}
+.pantry3 button.on.have{background:var(--green-l);border-color:var(--green);color:var(--green-d);font-weight:600}
+.pantry3 button.on.want{background:var(--sun-l);border-color:var(--sun);font-weight:600}
+.pantry3 button.on.no{background:var(--soft);color:var(--muted);text-decoration:line-through}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:14px}
+.stat b{font-family:var(--serif);font-size:1.6rem;font-weight:400;display:block;color:var(--green)}
+.stat span{font-size:.86rem;color:var(--muted)}
+.split{display:flex;height:16px;border-radius:99px;overflow:hidden;margin:10px 0}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:.86rem;color:var(--muted)}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+.stepper{display:flex;gap:10px;align-items:flex-start;padding:14px;border:1px solid var(--line);border-radius:var(--radius);background:var(--card)}
+.stepper+.stepper{margin-top:10px}
+.stepper .sn{width:28px;height:28px;border-radius:50%;background:var(--green);color:#fff;display:grid;place-items:center;font-weight:700;font-size:.85rem;flex-shrink:0}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]) .stepper .sn, :root:not([data-theme="light"]) .stage .num{color:#132013} }
+.combo{background:var(--green-xl);border:1px dashed var(--green);border-radius:var(--radius);padding:16px}
+.toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%) translateY(20px);background:var(--ink);color:var(--bg);padding:11px 18px;border-radius:12px;font-size:.92rem;opacity:0;transition:.25s;z-index:50;pointer-events:none;max-width:90vw}
+.toast.show{opacity:1;transform:translateX(-50%)}
+.milestone{display:flex;gap:12px;align-items:center;padding:12px 14px;border-radius:14px;border:1px solid var(--line);background:var(--card)}
+.milestone+.milestone{margin-top:8px}
+.milestone.on{background:var(--green-xl);border-color:var(--green-l)}
+.milestone .m{font-size:1.4rem;width:36px;text-align:center;filter:grayscale(1);opacity:.5}
+.milestone.on .m{filter:none;opacity:1}
+.weeks{display:flex;gap:6px;align-items:flex-end;height:90px;margin-top:10px}
+.weeks div{flex:1;background:var(--green-l);border-radius:6px 6px 0 0;position:relative;min-height:4px}
+.weeks div.cur{background:var(--green)}
+.art p,.art li{max-width:62ch}
+.art h3{margin-top:18px}
+.wizard-top{display:flex;align-items:center;gap:12px;margin-bottom:10px}
+.wizard-top .ct{font-size:.85rem;color:var(--muted);white-space:nowrap}
+.q{margin-top:22px}
+.q .qh{display:flex;gap:10px;align-items:center;font-family:var(--serif);font-size:1.15rem}
+.empty{text-align:center;padding:26px 16px;color:var(--muted);border:1px dashed var(--line);border-radius:var(--radius)}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+details.card summary{cursor:pointer;font-weight:600;list-style:none;display:flex;justify-content:space-between}
+details.card summary::after{content:"+";color:var(--muted)}
+details.card[open] summary::after{content:"–"}
+:root[data-theme="dark"] .btn:not(.ghost):not(.sec), :root[data-theme="dark"] .chip.on, :root[data-theme="dark"] .seg button.on, :root[data-theme="dark"] .tabs button.on, :root[data-theme="dark"] .stepper .sn, :root[data-theme="dark"] .stage .num{color:#132013}
+:root[data-theme="dark"] .pill.warm{color:var(--sun)}
+.side .copy{font-size:.78rem;color:var(--muted);margin:26px 8px 0;line-height:1.4}
+.homebar{display:flex;justify-content:flex-end;margin:0 0 10px}
+.gear{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--card);border-radius:999px;padding:7px 13px;font-size:.88rem;font-weight:600;color:var(--ink);text-decoration:none}
+@media (min-width:861px){.homebar{display:none}}
+.set-row{display:flex;align-items:center;gap:14px;padding:14px 0;border-bottom:1px solid var(--line)}
+.set-row:last-child{border-bottom:0}
+.set-row .body{flex:1;min-width:0}
+.set-row .t{font-weight:700}
+.danger{background:var(--tomato)!important;color:#fff!important}
+.copyline{text-align:center;color:var(--muted);font-size:.82rem;margin-top:22px}
+.tour-bg{position:fixed;inset:0;background:rgba(20,28,20,.55);z-index:60;display:flex;align-items:center;justify-content:center;padding:16px;padding-top:calc(16px + env(safe-area-inset-top,0px));padding-bottom:calc(16px + env(safe-area-inset-bottom,0px))}
+.tour{background:var(--card);color:var(--ink);border-radius:var(--radius-lg);max-width:460px;width:100%;max-height:100%;overflow:auto;padding:24px 22px 20px;box-shadow:0 20px 60px rgba(0,0,0,.25)}
+.tour .ticon{width:64px;height:64px;border-radius:50%;display:grid;place-items:center;font-size:2rem;background:var(--green-xl);margin-bottom:12px}
+.tour h2{font-size:1.45rem;margin-bottom:6px;text-wrap:balance}
+.tour p{color:var(--muted);margin:.5em 0}
+.tour ul{margin:.6em 0;padding-left:0;list-style:none}
+.tour li{display:flex;gap:10px;align-items:flex-start;margin:.55em 0;font-size:.95rem}
+.tour li b{color:var(--ink)}
+.tour .tdots{display:flex;gap:6px;justify-content:center;margin:16px 0 14px}
+.tour .tdots i{width:8px;height:8px;border-radius:50%;background:var(--line)}
+.tour .tdots i.on{background:var(--green);width:22px;border-radius:99px}
+.tour .tfoot{display:flex;gap:10px;align-items:center}
+.tour .tstep{font-size:.8rem;color:var(--muted);font-weight:600;letter-spacing:.03em}
+.tour-block{position:fixed;inset:0;z-index:58}
+.tour-spot{position:fixed;z-index:59;border-radius:18px;box-shadow:0 0 0 4px var(--sun),0 0 0 9999px rgba(20,28,20,.55);pointer-events:none;transition:all .25s ease}
+.tour-card{position:fixed;z-index:61;width:min(380px,calc(100vw - 32px));max-height:calc(100vh - 32px);padding:18px 18px 16px}
+.tour-card h2{font-size:1.3rem}
+.tour .tstepline{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
+.tour .tdots{margin:12px 0 12px}
+.tourlink{display:inline-flex;align-items:center;gap:6px;border:0;background:transparent;color:var(--green);font-weight:600;padding:8px 0;font-size:.95rem}
+@media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<div class="app">
+  <nav class="side" id="side" aria-label="Main"></nav>
+  <main id="main"><div class="wrap" id="view"></div></main>
+</div>
+<nav class="tabbar" id="tabbar" aria-label="Quick"></nav>
+<div id="tourRoot"></div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script>
+/* =========================================================
+   DATA: reference content (no prices, no recipes, no nutrition advice)
+   Allergen tags: gluten, soy, peanuts, treenuts, sesame, coconut
+   cost: 1 generally lower, 2 moderate, 3 often higher (relative only)
+   conv: 1 needs prep, 2 some prep, 3 ready to use
+   ========================================================= */
+const AVOID = [
+  {id:'gluten',label:'Gluten'},{id:'soy',label:'Soy'},{id:'peanuts',label:'Peanuts'},
+  {id:'treenuts',label:'Tree nuts'},{id:'sesame',label:'Sesame'},{id:'coconut',label:'Coconut'}
+];
+const LABEL = {
+  household:{1:'1',2:'2',3:'3',4:'4',5:'5+'},
+  current:{none:'Not at all',few:'A few meals are plant-based',half:'About half',mostly:'Mostly plant-based',full:'Completely plant-based'},
+  goal:{more:'Eating more plant-based meals',mostly:'Mostly plant-based',full:'Fully plant-based',unsure:'Still figuring it out'},
+  transition:{gradual:'Gradually',all:'All at once',unsure:"I'm not sure"},
+  cooking:{0:"I don't cook",1:'Bare minimum',2:"I'm comfortable cooking",3:'I love cooking'},
+  challenge:{what:"I don't know what to eat",shopping:'Grocery shopping',cost:'Cost',cooking:'Cooking',time:"I don't have enough time",miss:'I miss certain foods',out:'Eating out',household:"My household/family doesn't eat this way",overwhelmed:"I'm overwhelmed",other:'Other'}
+};
+const ENJOY = ['Tacos','Pasta','Pizza','Burgers','Sandwiches','Stir-fry','Curry','Soup','Salads','Burritos','Rice bowls','Oatmeal','Smoothies','Potatoes','Chili','Noodles','Wraps','Toast','Fruit','Snack plates'];
+
+const SWAPS = {
+ chicken:{n:'Chicken',e:'🍗',intro:'Often what people miss is the sauce, the crunch or the convenience. Keep those and swap the chicken.',items:[
+  {n:'Chickpeas',e:'🫘',cost:1,conv:3,kind:'whole',t:['Lower cost','Versatile','Ready to use (canned)'],d:'Great in bowls, salads, wraps and curries.'},
+  {n:'White beans',e:'🫘',cost:1,conv:3,kind:'whole',t:['Lower cost','Ready to use (canned)'],d:'Soft and mild. Good in soups, stews and pasta.'},
+  {n:'Extra-firm tofu',e:'🧈',c:['soy'],cost:1,conv:2,kind:'whole',t:['Lower cost','Versatile','Requires cooking'],d:'Takes on marinades well. Cube and bake or pan-fry.'},
+  {n:'Tempeh',e:'🟫',c:['soy'],cost:2,conv:2,kind:'whole',t:['Hearty','Requires cooking'],d:'Firm and nutty. Good sliced or crumbled.'},
+  {n:'Seitan',e:'🍖',c:['gluten'],cost:2,conv:3,kind:'whole',t:['Chewy texture','Ready to use (store-bought)'],d:'Texture is similar to chicken in sandwiches and stir-fries.'},
+  {n:'Jackfruit (canned or frozen)',e:'🥭',cost:2,conv:2,kind:'whole',t:['Requires cooking','Shredded texture'],d:'Works for pulled or shredded chicken style meals.'},
+  {n:'Roasted cauliflower bites',e:'🥦',cost:1,conv:1,kind:'whole',t:['Lower cost','Requires cooking'],d:'Toss with a sauce you like, such as buffalo or barbecue.'},
+  {n:'Plant-based chicken strips or nuggets',e:'🍽️',c:['soy','gluten'],cost:3,conv:3,kind:'product',t:['Convenient','Ready to heat'],d:'Closest to the familiar thing. Many contain soy or wheat, so check labels.'},
+  {n:'Your favorite sauce on chickpeas, cauliflower or tofu',e:'🍯',cost:1,conv:2,kind:'whole',t:['Familiar flavor'],d:'Buffalo, barbecue or teriyaki taste just as good on a plant-based base. Keep the sauce, change what it goes on.'},
+  {n:'Chickpea "chicken" salad',e:'🥪',cost:1,conv:3,kind:'whole',t:['No cooking'],d:'Mash chickpeas with plant mayo, celery, mustard and seasoning for sandwiches and wraps.'},
+  {n:'Soy curls',e:'🥢',c:['soy'],cost:2,conv:2,kind:'whole',t:['Chewy texture','Shelf stable'],d:'Dried strips of whole soybean. Soak in broth, then sauté for fajitas, stir-fries or "chicken" salad.'},
+  {n:'Shredded king oyster mushrooms',e:'🍄',cost:2,conv:1,kind:'whole',t:['Shredded texture'],d:'Pull the stems apart with a fork and sear for tacos and pulled "chicken" sandwiches.'}
+ ]},
+ beef:{n:'Ground beef',e:'🥩',intro:'Most of what makes tacos, chili or pasta sauce taste right is the seasoning and sauce. Keep those and swap the beef.',items:[
+  {n:'Lentils',e:'🫘',cost:1,conv:2,kind:'whole',t:['Lower cost','Versatile','Requires cooking'],d:'Works in tacos, sloppy joes, chili and pasta sauce.'},
+  {n:'Black beans',e:'⚫',cost:1,conv:3,kind:'whole',t:['Lower cost','Ready to use (canned)'],d:'Mash slightly for taco and burrito fillings.'},
+  {n:'Lentils and mushrooms, chopped fine',e:'🍄',cost:1,conv:1,kind:'whole',t:['Lower cost','Requires cooking'],d:'Mushrooms add a savory, meaty texture.'},
+  {n:'TVP (textured vegetable protein)',e:'🥣',c:['soy'],cost:1,conv:2,kind:'whole',t:['Lower cost','Shelf stable'],d:'Rehydrate in broth. Texture is close to ground meat.'},
+  {n:'Crumbled firm tofu',e:'🧈',c:['soy'],cost:1,conv:2,kind:'whole',t:['Lower cost','Requires cooking'],d:'Brown it well with seasoning for taco or breakfast crumbles.'},
+  {n:'Walnut "meat"',e:'🌰',c:['treenuts'],cost:2,conv:2,kind:'whole',t:['No cooking needed'],d:'Pulse walnuts with taco seasoning for a raw taco filling.'},
+  {n:'Bulgur wheat',e:'🌾',c:['gluten'],cost:1,conv:2,kind:'whole',t:['Lower cost','Quick cooking'],d:'Adds bulk to chili and sauces.'},
+  {n:'Plant-based ground',e:'🍽️',cost:3,conv:3,kind:'product',t:['Convenient','Cooks like ground beef'],d:'Easiest one-to-one swap. Ingredients vary a lot, so check labels.'},
+  {n:'Black bean and quinoa crumbles',e:'🌯',cost:1,conv:1,kind:'whole',t:['Hearty'],d:'Cook together with taco seasoning for burrito bowls and stuffed peppers.'},
+  {n:'Finely chopped eggplant',e:'🍆',cost:1,conv:1,kind:'whole',t:['Meaty texture'],d:'Chop small and cook down with tomato paste for a rich pasta sauce or chili.'},
+  {n:'Mushroom and walnut mince',e:'🍄',c:['treenuts'],cost:2,conv:1,kind:'whole',t:['Rich'],d:'Pulse mushrooms and walnuts, then brown in a pan. Great in bolognese and shepherd’s pie.'}
+ ]},
+ patties:{n:'Burger patties',e:'🍔',intro:'Burgers are one of the easiest foods to keep. The whole experience can stay the same, and the toppings you love, like pickles, onions, ketchup, mustard and barbecue sauce, are usually plant-based already.',items:[
+  {n:'Homemade bean patties',e:'🫘',cost:1,conv:1,kind:'whole',t:['Lower cost','Requires cooking'],d:'Mash beans with oats or breadcrumbs and seasoning.'},
+  {n:'Portobello mushroom caps',e:'🍄',cost:2,conv:2,kind:'whole',t:['Requires cooking'],d:'Grill or pan-sear with a marinade.'},
+  {n:'Frozen veggie burgers',e:'🧊',cost:2,conv:3,kind:'product',t:['Convenient','Freezer friendly'],d:'Many styles. Check labels for egg, cheese and allergens.'},
+  {n:'Tofu steaks',e:'🧈',c:['soy'],cost:1,conv:2,kind:'whole',t:['Lower cost','Requires cooking'],d:'Slice extra-firm tofu thick and sear.'},
+  {n:'Plant-based burger patties',e:'🍔',cost:3,conv:3,kind:'product',t:['Convenient','Closest to beef'],d:'Cooks like a beef patty. Check labels for allergens.'},
+  {n:'Chickpea patties',e:'🫘',cost:1,conv:1,kind:'whole',t:['Freezer friendly'],d:'Mash chickpeas with grated veggies and oats or breadcrumbs, then pan-fry.'},
+  {n:'Black bean and sweet potato patties',e:'🍠',cost:1,conv:1,kind:'whole',t:['Freezer friendly'],d:'Mash roasted sweet potato with black beans and spices, shape and bake.'},
+  {n:'Lentil and walnut patties',e:'🟤',c:['treenuts'],cost:2,conv:1,kind:'whole',t:['Hearty'],d:'Cooked lentils and chopped walnuts hold together well on the grill or in a pan.'},
+  {n:'Frozen falafel',e:'🧆',cost:2,conv:3,kind:'product',t:['Convenient'],d:'Flatten into patties or tuck into a bun with lettuce, tomato and a creamy sauce.'}
+ ]},
+ fish:{n:'Fish',e:'🐟',intro:'Usually it\'s the flaky texture, the taste of the sea, or a favorite dish like tuna salad or fish tacos. All of those can be recreated.',items:[
+  {n:'Smashed chickpea "tuna"',e:'🫘',cost:1,conv:2,kind:'whole',t:['Lower cost','No cooking'],d:'Mash chickpeas with a creamy dressing, pickles and a little seaweed.'},
+  {n:'Hearts of palm',e:'🌴',cost:2,conv:3,kind:'whole',t:['Ready to use','Flaky texture'],d:'Shred for "crab" cakes pan-fried until golden, or use in "fish" salads.'},
+  {n:'Tofu with nori',e:'🧈',c:['soy'],cost:1,conv:2,kind:'whole',t:['Lower cost','Requires cooking'],d:'Wrap tofu in seaweed and pan-fry for a sea flavor.'},
+  {n:'Banana blossom (canned)',e:'🌸',cost:2,conv:2,kind:'whole',t:['Flaky texture','Requires cooking'],d:'Often used for battered "fish".'},
+  {n:'Plant-based fish fillets and "tuna"',e:'🍽️',c:['soy','gluten'],cost:3,conv:3,kind:'product',t:['Convenient','Ready to heat'],d:'Look in the freezer and canned aisles. Many contain soy or wheat, so check labels.'},
+  {n:'Nori, kelp flakes or dulse',e:'🌊',cost:2,conv:3,kind:'whole',t:['Taste of the sea','Ready to use'],d:'A sprinkle adds an ocean flavor to almost anything.'},
+  {n:'Crispy tofu or cauliflower fish tacos',e:'🌮',c:['soy'],cost:1,conv:1,kind:'whole',t:['Lower cost','Requires cooking'],d:'Batter and pan-fry, then serve with slaw and lime.'},
+  {n:'Carrot "lox"',e:'🥕',cost:1,conv:1,kind:'whole',t:['Make ahead'],d:'Thin carrot ribbons marinated with salt, a little smoke and seaweed. Great on bagels.'},
+  {n:'King oyster mushroom "scallops"',e:'🍄',cost:2,conv:1,kind:'whole',t:['Tender texture'],d:'Slice the thick stems into rounds and sear in a hot pan until golden.'}
+ ]},
+ eggs:{n:'Eggs',e:'🥚',intro:'Think about how you used eggs: breakfast scrambles, baking or binding. Each one has a different swap.',items:[
+  {n:'Tofu scramble',e:'🍳',c:['soy'],cost:1,conv:2,kind:'whole',t:['Lower cost','Requires cooking'],d:'Crumble firm tofu with your usual scramble fillings. Black salt adds an eggy taste.'},
+  {n:'Chickpea flour omelet',e:'🥞',cost:1,conv:1,kind:'whole',t:['Lower cost','Requires cooking'],d:'Whisk chickpea flour and water, then cook like an omelet.'},
+  {n:'Flax "egg" for baking',e:'🌱',cost:1,conv:2,kind:'whole',t:['Lower cost','Baking only'],d:'Ground flax plus water helps bind baked goods.'},
+  {n:'Mashed banana or applesauce',e:'🍌',cost:1,conv:3,kind:'whole',t:['Lower cost','Baking only'],d:'Adds moisture and binding to muffins and pancakes.'},
+  {n:'Aquafaba',e:'🥫',cost:1,conv:2,kind:'whole',t:['Lower cost','Baking'],d:'The liquid from canned chickpeas. Whips up like egg whites.'},
+  {n:'Plant-based liquid egg',e:'🍽️',cost:3,conv:3,kind:'product',t:['Convenient','Scrambles like egg'],d:'Often made from mung bean. Check labels.'},
+  {n:'Chickpea "egg" salad',e:'🥪',cost:1,conv:3,kind:'whole',t:['No cooking'],d:'Mash chickpeas with plant mayo, mustard, a pinch of turmeric and black salt.'},
+  {n:'Silken tofu',e:'🧈',c:['soy'],cost:1,conv:2,kind:'whole',t:['Quiche and baking'],d:'Blend into quiches, frittatas and creamy baked goods.'},
+  {n:'Black salt (kala namak)',e:'🧂',cost:2,conv:3,kind:'whole',t:['Eggy flavor'],d:'A pinch gives tofu, chickpeas or avocado toast an egg-like taste.'},
+  {n:'Egg replacer powder',e:'🥄',cost:2,conv:3,kind:'product',t:['Baking'],d:'A shelf-stable mix for cookies, cakes and muffins.'}
+ ]},
+ milk:{n:'Milk',e:'🥛',intro:'Try a few. Each plant milk works differently in coffee, cereal and cooking. For cooking and baking, unsweetened plain versions work best.',items:[
+  {n:'Oat milk',e:'🌾',cost:2,conv:3,kind:'product',t:['Creamy','Good in coffee'],d:'Barista-style versions froth well for coffee. If you avoid gluten, look for a label that says gluten-free.'},
+  {n:'Soy milk',e:'🥛',c:['soy'],cost:1,conv:3,kind:'product',t:['Lower cost','Versatile'],d:'Works in cooking, baking and cereal.'},
+  {n:'Pea milk',e:'🟢',cost:2,conv:3,kind:'product',t:['Creamy','Ready to use'],d:'Neutral flavor. Good in cereal and coffee.'},
+  {n:'Rice milk',e:'🍚',cost:1,conv:3,kind:'product',t:['Lower cost','Mild'],d:'Thin and slightly sweet.'},
+  {n:'Almond or cashew milk',e:'🌰',c:['treenuts'],cost:2,conv:3,kind:'product',t:['Light','Ready to use'],d:'Thinner texture. Good for smoothies and cereal.'},
+  {n:'Coconut milk beverage',e:'🥥',c:['coconut'],cost:2,conv:3,kind:'product',t:['Ready to use'],d:'Mild coconut flavor. Different from canned coconut milk.'},
+  {n:'Homemade oat milk',e:'🥣',cost:1,conv:2,kind:'whole',t:['Requires a blender'],d:'Blend oats with cold water briefly, then strain. Keeps a few days in the fridge.'},
+  {n:'Barista-style plant milk',e:'☕',cost:2,conv:3,kind:'product',t:['Good in coffee'],d:'Made to froth and not separate in hot coffee.'},
+  {n:'Hemp milk',e:'🌿',cost:2,conv:3,kind:'product',t:['Nut-free'],d:'Earthy flavor that works well in smoothies.'}
+ ]},
+ cheese:{n:'Cheese',e:'🧀',intro:'Cheese is one of the most common foods people miss. You don\'t need a perfect match. Think about the role it played: salty, creamy or melty. If you\'re going gradually, it\'s fine to replace cheese later.',items:[
+  {n:'Nutritional yeast',e:'✨',cost:2,conv:3,kind:'whole',t:['Cheesy flavor','Shelf stable'],d:'Sprinkle on popcorn, pasta and potatoes.'},
+  {n:'Potato and carrot "cheese" sauce',e:'🥔',cost:1,conv:1,kind:'whole',t:['Lower cost','Requires cooking'],d:'Blended with seasoning for nachos and mac.'},
+  {n:'Cashew cheese sauce',e:'🌰',c:['treenuts'],cost:2,conv:1,kind:'whole',t:['Rich','Requires a blender'],d:'Creamy and rich for pasta and dips.'},
+  {n:'Hummus as a spread',e:'🫙',c:['sesame'],cost:1,conv:3,kind:'product',t:['Ready to use'],d:'Replaces cheese on sandwiches and wraps.'},
+  {n:'Tofu "feta"',e:'🧈',c:['soy'],cost:1,conv:2,kind:'whole',t:['Lower cost','Marinate ahead'],d:'Crumbled tofu in lemon, herbs and salt.'},
+  {n:'Store-bought plant cheese',e:'🧀',c:['coconut'],cost:3,conv:3,kind:'product',t:['Convenient','Melts'],d:'Brands vary a lot. Many are coconut-oil based.'},
+  {n:'Olives, capers or a little miso',e:'🫒',cost:2,conv:3,kind:'whole',t:['Salty flavor','Ready to use'],d:'For the salty, savory flavor cheese adds to pasta, salads and sandwiches.'},
+  {n:'Tofu ricotta',e:'🍝',c:['soy'],cost:1,conv:2,kind:'whole',t:['Lasagna and stuffed shells'],d:'Crumble firm tofu with lemon, garlic, salt and nutritional yeast.'},
+  {n:'White bean "cheese" sauce',e:'🫘',cost:1,conv:2,kind:'whole',t:['Requires a blender'],d:'Blend white beans with nutritional yeast, lemon and garlic for a creamy, cheesy sauce.'},
+  {n:'Avocado',e:'🥑',cost:2,conv:3,kind:'whole',t:['Creamy'],d:'Sliced or mashed, it brings the creaminess cheese used to add to sandwiches, tacos and salads.'}
+ ]},
+ yogurt:{n:'Yogurt',e:'🍦',intro:'Plant yogurts work the same way in bowls, smoothies and parfaits. Textures vary a lot, so try a couple.',items:[
+  {n:'Soy yogurt',e:'🥣',c:['soy'],cost:2,conv:3,kind:'product',t:['Ready to use'],d:'Thick and tangy.'},
+  {n:'Oat yogurt',e:'🌾',cost:2,conv:3,kind:'product',t:['Ready to use'],d:'Mild and creamy.'},
+  {n:'Coconut yogurt',e:'🥥',c:['coconut'],cost:3,conv:3,kind:'product',t:['Rich','Ready to use'],d:'Very creamy.'},
+  {n:'Almond yogurt',e:'🌰',c:['treenuts'],cost:3,conv:3,kind:'product',t:['Ready to use'],d:'Lighter texture.'},
+  {n:'Chia pudding',e:'🫐',cost:1,conv:2,kind:'whole',t:['Lower cost','Make ahead'],d:'Chia seeds and plant milk, soaked overnight.'},
+  {n:'Overnight oats',e:'🫙',cost:1,conv:2,kind:'whole',t:['Make ahead'],d:'Oats soaked in plant milk fill the same breakfast role, topped with fruit.'},
+  {n:'Blended silken tofu with fruit',e:'🍓',c:['soy'],cost:1,conv:2,kind:'whole',t:['Requires a blender'],d:'Smooth and creamy. Sweeten with fruit or a little maple syrup.'},
+  {n:'Homemade plant yogurt',e:'🥛',cost:1,conv:1,kind:'whole',t:['Make ahead'],d:'Plant milk plus a yogurt starter, left in a warm spot overnight.'}
+ ]},
+ butter:{n:'Butter',e:'🧈',intro:'Butter usually does one of two jobs: adding richness, or helping in baking. There\'s a swap for each.',items:[
+  {n:'Olive oil',e:'🫒',cost:2,conv:3,kind:'whole',t:['Ready to use','Cooking'],d:'For sautéing, roasting and dipping bread.'},
+  {n:'Plant-based butter',e:'🧈',cost:2,conv:3,kind:'product',t:['Convenient','Baking and toast'],d:'Works one-to-one in most uses. Ingredients vary, so check labels.'},
+  {n:'Mashed avocado',e:'🥑',cost:2,conv:3,kind:'whole',t:['Ready to use'],d:'Great on toast and sandwiches.'},
+  {n:'Peanut butter on toast',e:'🥜',c:['peanuts'],cost:1,conv:3,kind:'whole',t:['Lower cost','Ready to use'],d:'Replaces butter for breakfast toast.'},
+  {n:'Coconut oil',e:'🥥',c:['coconut'],cost:2,conv:3,kind:'whole',t:['Baking'],d:'Solid at room temperature, which helps in baking.'},
+  {n:'Sunflower seed butter',e:'🌻',cost:2,conv:3,kind:'whole',t:['Ready to use'],d:'A peanut-free spread for toast and sandwiches.'},
+  {n:'Vegetable broth for sautéing',e:'🍲',cost:1,conv:3,kind:'whole',t:['Oil-free'],d:'Cook onions and vegetables in a splash of broth instead of butter.'},
+  {n:'Applesauce in baking',e:'🍎',cost:1,conv:3,kind:'whole',t:['Baking'],d:'Replaces some of the butter in muffins and quick breads.'}
+ ]},
+ cream:{n:'Cream',e:'🍶',intro:'Creamy sauces can be rebuilt with pantry ingredients.',items:[
+  {n:'Blended white beans',e:'🫘',cost:1,conv:2,kind:'whole',t:['Lower cost','Requires a blender'],d:'Thickens soups and pasta sauces.'},
+  {n:'Canned coconut milk',e:'🥥',c:['coconut'],cost:1,conv:3,kind:'whole',t:['Lower cost','Ready to use'],d:'Rich. Great in curries and soups.'},
+  {n:'Oat cooking cream',e:'🌾',cost:2,conv:3,kind:'product',t:['Convenient'],d:'Pours and cooks like cream.'},
+  {n:'Blended cashews',e:'🌰',c:['treenuts'],cost:2,conv:1,kind:'whole',t:['Rich','Requires a blender'],d:'Soak and blend for silky sauces.'},
+  {n:'Blended silken tofu',e:'🧈',c:['soy'],cost:1,conv:2,kind:'whole',t:['Lower cost'],d:'Neutral and creamy in sauces and desserts.'},
+  {n:'Plant-based creamer',e:'☕',cost:2,conv:3,kind:'product',t:['Ready to use'],d:'For coffee and tea.'},
+  {n:'Blended cauliflower',e:'🥦',cost:1,conv:1,kind:'whole',t:['Creamy soups'],d:'Steam and blend until silky for creamy soups and alfredo-style sauces.'},
+  {n:'Coconut cream',e:'🥥',c:['coconut'],cost:1,conv:3,kind:'whole',t:['Whips up'],d:'Chill a can of coconut milk, scoop off the thick top and whip for desserts.'}
+ ]},
+ mayo:{n:'Mayonnaise',e:'🥪',intro:'Plant mayo tastes very close to the original, and spreads like hummus and avocado work too.',items:[
+  {n:'Store-bought plant mayo',e:'🫙',cost:2,conv:3,kind:'product',t:['Convenient','Ready to use'],d:'Tastes close to the original. Check labels for allergens.'},
+  {n:'Mashed avocado',e:'🥑',cost:2,conv:3,kind:'whole',t:['Ready to use'],d:'Creamy spread for sandwiches.'},
+  {n:'Hummus',e:'🫙',c:['sesame'],cost:1,conv:3,kind:'product',t:['Ready to use'],d:'Works in wraps and sandwiches.'},
+  {n:'Aquafaba mayo',e:'🥫',cost:1,conv:1,kind:'whole',t:['Lower cost','Requires a blender'],d:'Made with chickpea liquid and oil.'},
+  {n:'Tahini sauce',e:'🥣',c:['sesame'],cost:2,conv:2,kind:'whole',t:['Versatile'],d:'Thin with lemon and water for a creamy drizzle.'},
+  {n:'Silken tofu mayo',e:'🧈',c:['soy'],cost:1,conv:2,kind:'whole',t:['Requires a blender'],d:'Blend silken tofu with lemon, mustard and a little oil.'},
+  {n:'Mashed white beans with lemon',e:'🫘',cost:1,conv:2,kind:'whole',t:['Creamy'],d:'A creamy, lemony spread for wraps and sandwiches.'},
+  {n:'Mustard',e:'🌭',cost:1,conv:3,kind:'whole',t:['Tangy'],d:'Adds tang and moisture to sandwiches on its own.'}
+ ]},
+ icecream:{n:'Ice cream',e:'🍨',intro:'This one is easier than most people expect. The freezer aisle usually has several options.',items:[
+  {n:'"Nice cream"',e:'🍌',cost:1,conv:2,kind:'whole',t:['Lower cost','Requires a blender'],d:'Blend frozen bananas until smooth. Add cocoa or peanut butter if you like.'},
+  {n:'Sorbet',e:'🍧',cost:2,conv:3,kind:'product',t:['Ready to eat'],d:'Often already plant-based. Check labels.'},
+  {n:'Oat-based ice cream',e:'🌾',cost:3,conv:3,kind:'product',t:['Creamy','Ready to eat'],d:'Creamy with a neutral flavor.'},
+  {n:'Coconut-based ice cream',e:'🥥',c:['coconut'],cost:3,conv:3,kind:'product',t:['Rich','Ready to eat'],d:'Very rich and creamy.'},
+  {n:'Almond or cashew-based ice cream',e:'🌰',c:['treenuts'],cost:3,conv:3,kind:'product',t:['Smooth','Ready to eat'],d:'Smooth and creamy.'},
+  {n:'Frozen fruit popsicles',e:'🍭',cost:1,conv:2,kind:'whole',t:['Make ahead'],d:'Blend fruit with a little plant milk and freeze in molds.'},
+  {n:'Frozen grapes or mango',e:'🍇',cost:1,conv:3,kind:'whole',t:['Simple treat'],d:'A sweet, cold snack straight from the freezer.'},
+  {n:'Soy-based ice cream',e:'🍦',c:['soy'],cost:2,conv:3,kind:'product',t:['Creamy'],d:'Often one of the more affordable store-bought options.'}
+ ]},
+ bacon:{n:'Bacon',e:'🥓',intro:"Usually it's the smoky, salty crunch people miss. That flavor is easy to recreate.",items:[
+  {n:'Mushroom "bacon"',e:'🍄',cost:1,conv:1,kind:'whole',t:['Lower cost','Requires cooking'],d:'Thin-sliced mushrooms baked crispy with smoked paprika.'},
+  {n:'Smoky tempeh strips',e:'🟫',c:['soy'],cost:2,conv:2,kind:'whole',t:['Hearty','Requires cooking'],d:'Marinate and pan-fry until crisp.'},
+  {n:'Coconut "bacon"',e:'🥥',c:['coconut'],cost:2,conv:1,kind:'whole',t:['Crunchy','Requires cooking'],d:'Baked coconut flakes for salads and BLTs.'},
+  {n:'Store-bought plant-based bacon',e:'🍽️',cost:3,conv:3,kind:'product',t:['Convenient','Ready to heat'],d:'Several brands. Check labels.'},
+  {n:'Rice paper "bacon"',e:'🥢',c:['soy'],cost:1,conv:1,kind:'whole',t:['Crispy'],d:'Strips of rice paper brushed with soy sauce, maple and smoked paprika, baked until crisp.'},
+  {n:'Eggplant "bacon"',e:'🍆',cost:1,conv:1,kind:'whole',t:['Smoky'],d:'Thin slices baked with a smoky, salty marinade.'},
+  {n:'Tofu "bacon"',e:'🧈',c:['soy'],cost:1,conv:1,kind:'whole',t:['Smoky'],d:'Very thin slices of firm tofu pan-fried with a smoky marinade.'},
+  {n:'Smoked paprika or liquid smoke',e:'🔥',cost:1,conv:3,kind:'whole',t:['Smoky flavor'],d:'Gives beans, greens and potatoes the smoky taste people miss from bacon.'}
+ ]}
+};
+
+/* Swap order: the closest match to the real thing first, simpler swaps further down */
+const SWAP_ORDER = {"chicken": ["Plant-based chicken strips or nuggets", "Soy curls", "Seitan", "Tempeh", "Extra-firm tofu", "Jackfruit (canned or frozen)", "Shredded king oyster mushrooms", "Your favorite sauce on chickpeas, cauliflower or tofu", "Chickpea \"chicken\" salad", "Roasted cauliflower bites", "Chickpeas", "White beans"], "beef": ["Plant-based ground", "TVP (textured vegetable protein)", "Crumbled firm tofu", "Mushroom and walnut mince", "Walnut \"meat\"", "Lentils", "Lentils and mushrooms, chopped fine", "Black bean and quinoa crumbles", "Black beans", "Bulgur wheat", "Finely chopped eggplant"], "patties": ["Plant-based burger patties", "Frozen veggie burgers", "Frozen falafel", "Portobello mushroom caps", "Tofu steaks", "Homemade bean patties", "Black bean and sweet potato patties", "Chickpea patties", "Lentil and walnut patties"], "fish": ["Plant-based fish fillets and \"tuna\"", "Nori, kelp flakes or dulse", "Hearts of palm", "Banana blossom (canned)", "Tofu with nori", "Crispy tofu or cauliflower fish tacos", "King oyster mushroom \"scallops\"", "Smashed chickpea \"tuna\"", "Carrot \"lox\""], "eggs": ["Plant-based liquid egg", "Tofu scramble", "Chickpea flour omelet", "Black salt (kala namak)", "Chickpea \"egg\" salad", "Silken tofu", "Egg replacer powder", "Flax \"egg\" for baking", "Mashed banana or applesauce", "Aquafaba"], "milk": ["Oat milk", "Soy milk", "Almond or cashew milk", "Barista-style plant milk", "Pea milk", "Coconut milk beverage", "Rice milk", "Hemp milk", "Homemade oat milk"], "cheese": ["Store-bought plant cheese", "Nutritional yeast", "Cashew cheese sauce", "Tofu \"feta\"", "Tofu ricotta", "Potato and carrot \"cheese\" sauce", "White bean \"cheese\" sauce", "Hummus as a spread", "Avocado", "Olives, capers or a little miso"], "yogurt": ["Oat yogurt", "Soy yogurt", "Coconut yogurt", "Almond yogurt", "Blended silken tofu with fruit", "Chia pudding", "Overnight oats", "Homemade plant yogurt"], "butter": ["Plant-based butter", "Olive oil", "Coconut oil", "Mashed avocado", "Peanut butter on toast", "Sunflower seed butter", "Applesauce in baking", "Vegetable broth for sautéing"], "cream": ["Oat cooking cream", "Plant-based creamer", "Canned coconut milk", "Coconut cream", "Blended cashews", "Blended silken tofu", "Blended white beans", "Blended cauliflower"], "mayo": ["Store-bought plant mayo", "Aquafaba mayo", "Silken tofu mayo", "Mashed avocado", "Hummus", "Tahini sauce", "Mashed white beans with lemon", "Mustard"], "icecream": ["Oat-based ice cream", "Coconut-based ice cream", "Almond or cashew-based ice cream", "Soy-based ice cream", "Sorbet", "\"Nice cream\"", "Frozen fruit popsicles", "Frozen grapes or mango"], "bacon": ["Store-bought plant-based bacon", "Smoky tempeh strips", "Tofu \"bacon\"", "Rice paper \"bacon\"", "Mushroom \"bacon\"", "Coconut \"bacon\"", "Eggplant \"bacon\"", "Smoked paprika or liquid smoke"]};
+Object.entries(SWAP_ORDER).forEach(([k,names])=>{ const it=SWAPS[k].items; it.sort((a,b)=>{ const ia=names.indexOf(a.n), ib=names.indexOf(b.n); return (ia<0?99:ia)-(ib<0?99:ib); }); });
+const BUDGET_TIPS = {
+ chicken:'Stretch it: beans and chickpeas cover most chicken-style meals for less. Save specialty products for meals where texture really matters to you.',
+ beef:'Try half and half: mix lentils into a smaller amount of plant-based ground to keep the texture you like at a lower cost.',
+ patties:'Make a batch of bean patties and freeze them. Keep one box of store-bought patties for busy nights.',
+ fish:'Canned chickpeas and hearts of palm cover most "tuna" and "crab" style meals.',
+ eggs:'For baking, pantry swaps like flax and banana usually cost less than packaged egg replacers.',
+ milk:'Compare shelf-stable cartons against refrigerated ones. Store brands are often worth trying.',
+ cheese:'A little nutritional yeast goes a long way. Treat store-bought plant cheese as an occasional add-on.',
+ yogurt:'Larger tubs are often better value than single cups if you will finish them.',
+ butter:'Olive oil covers most cooking. Keep plant butter for toast and baking.',
+ cream:'Blended beans and canned coconut milk are budget-friendly ways to add creaminess.',
+ mayo:'One jar of plant mayo lasts a long time. Avocado and hummus double as spreads.',
+ icecream:'Nice cream from frozen bananas costs very little. Keep store-bought pints as a treat.',
+ bacon:'Mushroom bacon is the lowest-cost option, and smoked paprika brings the same smoky flavor to almost anything.'
+};
+
+const MEALS = {
+ tacos:{n:'Tacos',e:'🌮',items:[
+  {n:'Lentil taco filling',d:'Cook lentils with taco seasoning. Same toppings you already use.',t:['Lower cost']},
+  {n:'Black bean and corn',d:'Canned beans, corn and salsa. Ready in minutes.',t:['Convenient','Lower cost']},
+  {n:'Seasoned tofu crumbles',c:['soy'],d:'Brown crumbled tofu with chili powder and cumin.',t:['Versatile']},
+  {n:'Roasted sweet potato and black bean',d:'Roast cubes, then add beans and lime.',t:['Requires cooking']},
+  {n:'Walnut taco "meat"',c:['treenuts'],d:'Pulse walnuts with seasoning. No cooking.',t:['No cooking']},
+  {n:'Plant-based ground',d:'Cook it exactly like ground beef.',t:['Convenient']},
+  {n:'Swap the toppings',d:'Guacamole in place of sour cream, or a store-bought plant-based sour cream.',t:['Easy swap']},
+  {n:'Corn tortillas',d:'Corn tortillas are an option if you avoid wheat. Check labels.',t:['Tip']}
+ ]},
+ spaghetti:{n:'Spaghetti',e:'🍝',items:[
+  {n:'Marinara as is',d:'Many jarred marinara sauces are already plant-based. Check for cheese.',t:['Convenient','Already plant-based']},
+  {n:'Lentil bolognese',d:'Stir cooked lentils into your usual sauce.',t:['Lower cost']},
+  {n:'Mushroom and garlic',d:'Sauté mushrooms for a savory, meaty sauce.',t:['Requires cooking']},
+  {n:'Plant-based meatballs',c:['gluten','soy'],d:'Frozen options heat right in the sauce.',t:['Convenient']},
+  {n:'White bean and spinach',d:'Canned white beans and greens in garlic and olive oil.',t:['Lower cost']},
+  {n:'Regular wheat pasta',c:['gluten'],d:'Most dry pasta is plant-based. Fresh pasta often contains egg.',t:['Tip']},
+  {n:'Chickpea, lentil or rice pasta',d:'An option if you avoid wheat. Check labels.',t:['Tip']},
+  {n:'Nutritional yeast "parmesan"',d:'Sprinkle on top for a cheesy flavor.',t:['Easy swap']}
+ ]},
+ burgers:{n:'Burgers',e:'🍔',items:[
+  {n:'Frozen veggie burger',d:'Heat and build your burger the usual way.',t:['Convenient']},
+  {n:'Plant-based burger patty',d:'Cooks and tastes closest to beef.',t:['Convenient']},
+  {n:'Homemade black bean patty',d:'Freeze extras for later.',t:['Lower cost']},
+  {n:'Grilled portobello',d:'Marinate and grill. Great with barbecue sauce.',t:['Requires cooking']},
+  {n:'Swap the extras',d:'Plant mayo, avocado, or a plant-based cheese slice.',t:['Easy swap']},
+  {n:'Burger buns',c:['gluten'],d:'Many buns are plant-based. Some contain milk, egg or honey.',t:['Tip']},
+  {n:'Lettuce wrap',d:'Skip the bun and wrap it in lettuce.',t:['Tip']}
+ ]},
+ pizza:{n:'Pizza',e:'🍕',items:[
+  {n:'Veggie loaded, no cheese',d:'Extra sauce and lots of toppings. It works better than you might expect.',t:['Lower cost']},
+  {n:'Plant-based cheese shreds',c:['coconut'],d:'Melts on pizza. Brands vary.',t:['Convenient']},
+  {n:'Hummus base',c:['sesame'],d:'Spread hummus in place of sauce, then add veggies.',t:['Easy swap']},
+  {n:'Pesto without parmesan',c:['treenuts'],d:'Basil, oil, garlic and nuts. Check jarred pesto for cheese.',t:['Flavorful']},
+  {n:'Plant-based sausage or pepperoni',c:['gluten','soy'],d:'Adds the familiar savory topping.',t:['Convenient']},
+  {n:'Regular pizza dough',c:['gluten'],d:'Many store-bought doughs are plant-based. Check labels.',t:['Tip']},
+  {n:'Cauliflower crust',d:'Check labels: many contain cheese or egg.',t:['Tip']}
+ ]},
+ sandwiches:{n:'Sandwiches',e:'🥪',items:[
+  {n:'Hummus and veggie',c:['sesame'],d:'Hummus, cucumber, tomato, greens.',t:['No cooking']},
+  {n:'Chickpea salad',d:'Mashed chickpeas with plant mayo, celery and seasoning.',t:['Lower cost']},
+  {n:'Peanut butter and banana or jelly',c:['peanuts'],d:'Familiar, fast and budget-friendly.',t:['Lower cost','No cooking']},
+  {n:'Plant-based deli slices',c:['gluten','soy'],d:'Build your usual deli sandwich.',t:['Convenient']},
+  {n:'Avocado and tomato',d:'Add salt, pepper and greens.',t:['No cooking']},
+  {n:'Tempeh "BLT"',c:['soy'],d:'Pan-fried smoky tempeh strips with lettuce and tomato.',t:['Requires cooking']},
+  {n:'Bread',c:['gluten'],d:'Many breads are plant-based. Some contain milk, egg or honey.',t:['Tip']}
+ ]},
+ stirfry:{n:'Stir-fry',e:'🥡',items:[
+  {n:'Tofu stir-fry',c:['soy'],d:'Press, cube and crisp the tofu first.',t:['Versatile']},
+  {n:'Chickpea stir-fry',d:'Canned chickpeas crisp up nicely in a hot pan.',t:['Lower cost']},
+  {n:'Edamame and veggies',c:['soy'],d:'Frozen edamame goes straight into the pan.',t:['Convenient']},
+  {n:'Cashew stir-fry',c:['treenuts'],d:'Toasted cashews add crunch.',t:['Flavorful']},
+  {n:'Frozen stir-fry vegetables',d:'The fastest base there is.',t:['Convenient','Lower cost']},
+  {n:'Soy sauce',c:['soy','gluten'],d:'Most soy sauce is plant-based.',t:['Tip']},
+  {n:'Coconut aminos',c:['coconut'],d:'An option if you avoid soy.',t:['Tip']},
+  {n:'Peanut sauce',c:['peanuts'],d:'Peanut butter, lime and a little soy sauce or aminos.',t:['Flavorful']}
+ ]},
+ cereal:{n:'Cereal',e:'🥣',items:[
+  {n:'Swap to plant milk',d:'Pour your favorite plant milk over your usual cereal.',t:['Easy swap']},
+  {n:'Check the cereal label',d:'Some cereals contain milk, honey or gelatin. Many do not.',t:['Tip']},
+  {n:'Oatmeal',d:'Cook with water or plant milk. Top with fruit.',t:['Lower cost']},
+  {n:'Granola and plant yogurt',d:'A quick parfait.',t:['No cooking']}
+ ]},
+ breakfast:{n:'Breakfast',e:'🍳',items:[
+  {n:'Tofu scramble',c:['soy'],d:'Your usual scramble fillings, with tofu.',t:['Versatile']},
+  {n:'Oatmeal or overnight oats',d:'Make a few jars at once.',t:['Lower cost','Make ahead']},
+  {n:'Peanut butter toast',c:['peanuts','gluten'],d:'Add banana or berries.',t:['No cooking']},
+  {n:'Breakfast burrito',d:'Potatoes, black beans and salsa in a tortilla.',t:['Freezer friendly']},
+  {n:'Chickpea flour omelet',d:'Fill with the veggies you already like.',t:['Requires cooking']},
+  {n:'Smoothie',d:'Frozen fruit, plant milk and a spoon of nut or seed butter.',t:['Fast']},
+  {n:'Plant yogurt parfait',d:'Plant yogurt, fruit and granola.',t:['No cooking']}
+ ]},
+ wraps:{n:'Wraps',e:'🌯',items:[
+  {n:'Hummus veggie wrap',c:['sesame'],d:'Crunchy veggies and hummus.',t:['No cooking']},
+  {n:'Bean and rice burrito',d:'Beans, rice, salsa and guacamole.',t:['Lower cost']},
+  {n:'Buffalo chickpea wrap',d:'Chickpeas tossed in buffalo sauce with lettuce.',t:['Flavorful']},
+  {n:'Falafel wrap',c:['sesame'],d:'Store-bought or frozen falafel with tahini sauce.',t:['Convenient']},
+  {n:'Flour tortillas',c:['gluten'],d:'Most are plant-based. Check for lard.',t:['Tip']},
+  {n:'Corn tortillas or rice paper',d:'Options if you avoid wheat.',t:['Tip']}
+ ]},
+ bowls:{n:'Bowls',e:'🥗',items:[
+  {n:'Burrito bowl',d:'Rice, black beans, corn, salsa and guacamole.',t:['Lower cost']},
+  {n:'Roasted veggie grain bowl',d:'Any grain, roasted veg and a sauce you love.',t:['Versatile']},
+  {n:'Teriyaki tofu bowl',c:['soy'],d:'Rice, tofu, broccoli and teriyaki sauce.',t:['Flavorful']},
+  {n:'Mediterranean bowl',c:['sesame'],d:'Chickpeas, cucumber, tomato, hummus.',t:['No cooking']},
+  {n:'Lentil and sweet potato bowl',d:'Hearty and filling.',t:['Lower cost']}
+ ]}
+};
+
+const MISS = {
+ cheese:{n:'Cheese',e:'🧀',intro:'Cheese is one of the most common foods people miss. You do not need to find a perfect match. Many people focus on the role cheese played: salty, creamy, or melty.',items:[
+  {n:'For salty, savory flavor',d:'Nutritional yeast, olives, or a little miso.'},
+  {n:'For creaminess',d:'Hummus, avocado, or a cashew or potato-based sauce.',c:[]},
+  {n:'Cashew-based sauces',c:['treenuts'],d:'Rich and creamy on pasta and nachos.'},
+  {n:'For melty pizza and quesadillas',c:['coconut'],d:'Store-bought plant cheese shreds. Try a few brands.'},
+  {n:'Tofu "feta" on salads',c:['soy'],d:'Salty and tangy.'},
+  {n:'Keep it in the mix for now',d:'If you are transitioning gradually, it is fine to replace cheese later.'}
+ ]},
+ eggs:{n:'Eggs',e:'🥚',intro:'Think about how you used eggs: breakfast scrambles, baking, or binding. Each has a different swap.',items:[
+  {n:'Scrambles',c:['soy'],d:'Tofu scramble with black salt for an eggy flavor.'},
+  {n:'Omelets',d:'Chickpea flour batter.'},
+  {n:'Baking',d:'Flax "egg", mashed banana or applesauce.'},
+  {n:'Ready-made',d:'Plant-based liquid egg for the closest experience.'}
+ ]},
+ chicken:{n:'Chicken',e:'🍗',intro:'Often what people miss is the sauce, the crunch, or the convenience. Keep those and change the protein.',items:[
+  {n:'Keep your favorite sauce',d:'Buffalo, barbecue or teriyaki on chickpeas, cauliflower or tofu.'},
+  {n:'Crispy and breaded',c:['soy','gluten'],d:'Plant-based nuggets or tenders from the freezer aisle.'},
+  {n:'Shredded style',d:'Jackfruit for pulled "chicken" sandwiches.'},
+  {n:'Chewy texture',c:['gluten'],d:'Seitan strips in stir-fries and wraps.'},
+  {n:'Hearty and simple',c:['soy'],d:'Baked tofu cubes.'}
+ ]},
+ burgers:{n:'Burgers',e:'🍔',intro:'Burgers are one of the easiest foods to keep. The whole experience can stay the same.',items:[
+  {n:'Plant-based patties',d:'Closest to the original.'},
+  {n:'Frozen veggie burgers',d:'A different flavor, very convenient.'},
+  {n:'Mushroom or bean patties',d:'Lower cost and freezer friendly.'},
+  {n:'Keep the toppings you love',d:'Pickles, onions, ketchup, mustard and barbecue sauce are usually plant-based.'}
+ ]},
+ icecream:{n:'Ice cream',e:'🍨',intro:'This one is easier than most people expect. The freezer aisle usually has several options.',items:[
+  {n:'Oat-based ice cream',d:'Creamy with a neutral flavor.'},
+  {n:'Coconut-based ice cream',c:['coconut'],d:'Very rich.'},
+  {n:'Almond or cashew-based',c:['treenuts'],d:'Smooth and creamy.'},
+  {n:'Sorbet',d:'Often already plant-based. Check labels.'},
+  {n:'"Nice cream"',d:'Blend frozen bananas until smooth.'}
+ ]},
+ milk:{n:'Milk',e:'🥛',intro:'Try a few. Each plant milk works differently in coffee, cereal and cooking.',items:[
+  {n:'Coffee',d:'Oat milk or a barista-style blend.'},
+  {n:'Cereal',c:['soy'],d:'Soy milk or pea milk.'},
+  {n:'Cooking and baking',d:'Unsweetened plain versions work best.'},
+  {n:'Lighter option',c:['treenuts'],d:'Almond milk.'}
+ ]},
+ creamy:{n:'Creamy sauces',e:'🍲',intro:'Creamy sauces can be rebuilt with pantry ingredients.',items:[
+  {n:'Blended white beans',d:'Neutral, lower cost and thick.'},
+  {n:'Canned coconut milk',c:['coconut'],d:'Rich curries and soups.'},
+  {n:'Cashew cream',c:['treenuts'],d:'Silky alfredo-style sauces.'},
+  {n:'Oat cooking cream',d:'Ready to pour.'},
+  {n:'Silken tofu',c:['soy'],d:'Blend for creamy pasta sauces.'}
+ ]},
+ bacon:{n:'Bacon',e:'🥓',intro:'Usually it is the smoky, salty crunch people miss. That flavor is easy to recreate.',items:[
+  {n:'Smoky tempeh strips',c:['soy'],d:'Marinated and pan-fried.'},
+  {n:'Mushroom "bacon"',d:'Thin-sliced mushrooms baked crispy with smoked paprika.'},
+  {n:'Coconut "bacon"',c:['coconut'],d:'Baked coconut flakes for salads and BLTs.'},
+  {n:'Store-bought plant-based bacon',d:'Several brands. Check labels.'}
+ ]}
+};
+
+/* Pantry. lv = cooking styles it suits (0 don't cook, 1 bare min, 2 comfortable, 3 love). sec = grocery section */
+const PANTRY = [
+ {id:'rice',n:'Rice',e:'🍚',cat:'Grains',sec:'Canned & Dry Goods',lv:[1,2,3],cost:1},
+ {id:'ricepouch',n:'Microwave rice pouches',e:'🍚',cat:'Grains',sec:'Canned & Dry Goods',lv:[0,1],cost:2},
+ {id:'oats',n:'Oats',e:'🥣',cat:'Breakfast staples',sec:'Canned & Dry Goods',lv:[0,1,2,3],cost:1},
+ {id:'quinoa',n:'Quinoa',e:'🌾',cat:'Grains',sec:'Canned & Dry Goods',lv:[2,3],cost:2},
+ {id:'farro',n:'Farro or barley',e:'🌾',cat:'Grains',sec:'Canned & Dry Goods',lv:[3],cost:2,c:['gluten']},
+ {id:'bread',n:'Bread',e:'🍞',cat:'Grains',sec:'Other',lv:[0,1,2,3],cost:1,c:['gluten']},
+ {id:'tortflour',n:'Flour tortillas',e:'🌯',cat:'Grains',sec:'Other',lv:[0,1,2,3],cost:1,c:['gluten']},
+ {id:'tortcorn',n:'Corn tortillas',e:'🌮',cat:'Grains',sec:'Other',lv:[0,1,2,3],cost:1},
+ {id:'blackbeans',n:'Canned black beans',e:'⚫',cat:'Beans and legumes',sec:'Canned & Dry Goods',lv:[0,1,2,3],cost:1},
+ {id:'chickpeas',n:'Canned chickpeas',e:'🫘',cat:'Beans and legumes',sec:'Canned & Dry Goods',lv:[0,1,2,3],cost:1},
+ {id:'refried',n:'Refried beans',e:'🫘',cat:'Beans and legumes',sec:'Canned & Dry Goods',lv:[0,1,2],cost:1},
+ {id:'lentils',n:'Dry lentils',e:'🟤',cat:'Beans and legumes',sec:'Canned & Dry Goods',lv:[1,2,3],cost:1},
+ {id:'lentcan',n:'Canned lentils',e:'🥫',cat:'Beans and legumes',sec:'Canned & Dry Goods',lv:[0,1],cost:1},
+ {id:'drybeans',n:'Dried beans',e:'🫘',cat:'Beans and legumes',sec:'Canned & Dry Goods',lv:[2,3],cost:1},
+ {id:'pasta',n:'Pasta',e:'🍝',cat:'Pasta and noodles',sec:'Canned & Dry Goods',lv:[1,2,3],cost:1,c:['gluten']},
+ {id:'gfpasta',n:'Chickpea or rice pasta',e:'🍝',cat:'Pasta and noodles',sec:'Canned & Dry Goods',lv:[1,2,3],cost:2},
+ {id:'ricenoodles',n:'Rice noodles',e:'🍜',cat:'Pasta and noodles',sec:'Canned & Dry Goods',lv:[2,3],cost:1},
+ {id:'cantom',n:'Canned tomatoes',e:'🍅',cat:'Canned foods',sec:'Canned & Dry Goods',lv:[1,2,3],cost:1},
+ {id:'marinara',n:'Jarred marinara',e:'🫙',cat:'Sauces and condiments',sec:'Canned & Dry Goods',lv:[0,1,2,3],cost:1},
+ {id:'coconutmilk',n:'Canned coconut milk',e:'🥥',cat:'Canned foods',sec:'Canned & Dry Goods',lv:[2,3],cost:1,c:['coconut']},
+ {id:'broth',n:'Vegetable broth',e:'🍲',cat:'Canned foods',sec:'Canned & Dry Goods',lv:[2,3],cost:1},
+ {id:'soup',n:'Ready-to-eat plant-based soup',e:'🥣',cat:'Convenience foods',sec:'Canned & Dry Goods',lv:[0,1],cost:2},
+ {id:'frozveg',n:'Frozen mixed vegetables',e:'🥦',cat:'Frozen foods',sec:'Frozen',lv:[0,1,2,3],cost:1},
+ {id:'frozberry',n:'Frozen berries',e:'🫐',cat:'Frozen foods',sec:'Frozen',lv:[0,1,2,3],cost:2},
+ {id:'edamame',n:'Frozen edamame',e:'🫛',cat:'Frozen foods',sec:'Frozen',lv:[0,1,2,3],cost:1,c:['soy']},
+ {id:'frozstir',n:'Frozen stir-fry vegetables',e:'🥕',cat:'Frozen foods',sec:'Frozen',lv:[0,1,2,3],cost:1},
+ {id:'frozpot',n:'Frozen potatoes or hash browns',e:'🥔',cat:'Frozen foods',sec:'Frozen',lv:[0,1,2],cost:1},
+ {id:'vegburger',n:'Frozen veggie burgers',e:'🍔',cat:'Convenience foods',sec:'Plant-Based Alternatives',lv:[0,1,2],cost:2},
+ {id:'frozburrito',n:'Frozen plant-based burritos',e:'🌯',cat:'Convenience foods',sec:'Frozen',lv:[0,1],cost:2,c:['gluten']},
+ {id:'pb',n:'Peanut butter',e:'🥜',cat:'Nuts and seeds',sec:'Canned & Dry Goods',lv:[0,1,2,3],cost:1,c:['peanuts']},
+ {id:'almondbutter',n:'Almond butter',e:'🌰',cat:'Nuts and seeds',sec:'Canned & Dry Goods',lv:[0,1,2,3],cost:3,c:['treenuts']},
+ {id:'sunbutter',n:'Sunflower seed butter',e:'🌻',cat:'Nuts and seeds',sec:'Canned & Dry Goods',lv:[0,1,2,3],cost:2},
+ {id:'chia',n:'Chia seeds',e:'⚫',cat:'Nuts and seeds',sec:'Canned & Dry Goods',lv:[1,2,3],cost:2},
+ {id:'flax',n:'Ground flaxseed',e:'🌱',cat:'Nuts and seeds',sec:'Canned & Dry Goods',lv:[2,3],cost:2},
+ {id:'tahini',n:'Tahini',e:'🫙',cat:'Sauces and condiments',sec:'Canned & Dry Goods',lv:[2,3],cost:2,c:['sesame']},
+ {id:'walnuts',n:'Walnuts',e:'🌰',cat:'Nuts and seeds',sec:'Snacks',lv:[1,2,3],cost:3,c:['treenuts']},
+ {id:'salsa',n:'Salsa',e:'🌶️',cat:'Sauces and condiments',sec:'Canned & Dry Goods',lv:[0,1,2,3],cost:1},
+ {id:'soysauce',n:'Soy sauce',e:'🍶',cat:'Sauces and condiments',sec:'Canned & Dry Goods',lv:[1,2,3],cost:1,c:['soy','gluten']},
+ {id:'hotsauce',n:'Hot sauce',e:'🌶️',cat:'Sauces and condiments',sec:'Canned & Dry Goods',lv:[0,1,2,3],cost:1},
+ {id:'nooch',n:'Nutritional yeast',e:'✨',cat:'Sauces and condiments',sec:'Canned & Dry Goods',lv:[1,2,3],cost:2},
+ {id:'spices',n:'Basic spices (cumin, chili powder, garlic powder)',e:'🧂',cat:'Sauces and condiments',sec:'Canned & Dry Goods',lv:[2,3],cost:1},
+ {id:'curry',n:'Curry paste',e:'🍛',cat:'Sauces and condiments',sec:'Canned & Dry Goods',lv:[2,3],cost:2},
+ {id:'hummus',n:'Hummus',e:'🫙',cat:'Sauces and condiments',sec:'Refrigerated',lv:[0,1,2,3],cost:1,c:['sesame']},
+ {id:'dressing',n:'Vinaigrette dressing',e:'🥗',cat:'Sauces and condiments',sec:'Canned & Dry Goods',lv:[0,1,2,3],cost:1},
+ {id:'tofu',n:'Tofu',e:'🧈',cat:'Plant proteins',sec:'Refrigerated',lv:[1,2,3],cost:1,c:['soy']},
+ {id:'tempeh',n:'Tempeh',e:'🟫',cat:'Plant proteins',sec:'Refrigerated',lv:[2,3],cost:2,c:['soy']},
+ {id:'tvp',n:'TVP',e:'🥣',cat:'Plant proteins',sec:'Canned & Dry Goods',lv:[2,3],cost:1,c:['soy']},
+ {id:'seitan',n:'Seitan',e:'🍖',cat:'Plant proteins',sec:'Refrigerated',lv:[3],cost:2,c:['gluten']},
+ {id:'plantground',n:'Plant-based ground',e:'🍽️',cat:'Plant proteins',sec:'Plant-Based Alternatives',lv:[0,1,2],cost:3},
+ {id:'plantchicken',n:'Plant-based chicken strips',e:'🍗',cat:'Plant proteins',sec:'Plant-Based Alternatives',lv:[0,1],cost:3,c:['soy','gluten']},
+ {id:'plantmilk',n:'Plant milk',e:'🥛',cat:'Breakfast staples',sec:'Plant-Based Alternatives',lv:[0,1,2,3],cost:2},
+ {id:'cereal',n:'Cereal (check labels)',e:'🥣',cat:'Breakfast staples',sec:'Canned & Dry Goods',lv:[0,1,2,3],cost:2},
+ {id:'plantyog',n:'Plant yogurt',e:'🍦',cat:'Breakfast staples',sec:'Plant-Based Alternatives',lv:[0,1,2,3],cost:2},
+ {id:'bananas',n:'Bananas',e:'🍌',cat:'Breakfast staples',sec:'Produce',lv:[0,1,2,3],cost:1},
+ {id:'popcorn',n:'Popcorn',e:'🍿',cat:'Snacks',sec:'Snacks',lv:[0,1,2,3],cost:1},
+ {id:'roastchick',n:'Roasted chickpea snacks',e:'🫘',cat:'Snacks',sec:'Snacks',lv:[0,1],cost:2},
+ {id:'trailmix',n:'Trail mix',e:'🥜',cat:'Snacks',sec:'Snacks',lv:[0,1,2,3],cost:2,c:['peanuts','treenuts']},
+ {id:'pretzels',n:'Pretzels',e:'🥨',cat:'Snacks',sec:'Snacks',lv:[0,1,2,3],cost:1,c:['gluten']},
+ {id:'fruit',n:'Fresh fruit in season',e:'🍎',cat:'Snacks',sec:'Produce',lv:[0,1,2,3],cost:1},
+ {id:'precut',n:'Pre-cut vegetables',e:'🥕',cat:'Convenience foods',sec:'Produce',lv:[0,1],cost:2},
+ {id:'saladkit',n:'Bagged salad kits (check dressing)',e:'🥗',cat:'Convenience foods',sec:'Produce',lv:[0,1],cost:2},
+ {id:'potatoes',n:'Potatoes',e:'🥔',cat:'Grains',sec:'Produce',lv:[1,2,3],cost:1},
+ {id:'onions',n:'Onions and garlic',e:'🧅',cat:'Canned foods',sec:'Produce',lv:[2,3],cost:1}
+];
+const PANTRY_CATS = ['Grains','Beans and legumes','Pasta and noodles','Canned foods','Frozen foods','Nuts and seeds','Sauces and condiments','Plant proteins','Breakfast staples','Snacks','Convenience foods'];
+const SECTIONS = ['Produce','Frozen','Canned & Dry Goods','Refrigerated','Plant-Based Alternatives','Snacks','Other'];
+
+const STAPLES = [
+ {n:'Rice',e:'🍚',pro:'Generally lower cost. Stores for a long time.',con:'Requires cooking. Microwave pouches trade cost for convenience.'},
+ {n:'Dried beans',e:'🫘',pro:'Potentially lower cost per serving.',con:'Requires soaking and cooking.'},
+ {n:'Canned beans',e:'🥫',pro:'Greater convenience. Ready to use.',con:'Often a little more per serving than dried.'},
+ {n:'Lentils',e:'🟤',pro:'Lower cost. Cook without soaking.',con:'Requires about 20 to 30 minutes of cooking.'},
+ {n:'Oats',e:'🥣',pro:'Lower cost. Breakfast, baking and binding.',con:'If you avoid gluten, look for gluten-free labeled oats.'},
+ {n:'Potatoes',e:'🥔',pro:'Lower cost and filling. Very versatile.',con:'Requires cooking. Frozen versions add convenience.'},
+ {n:'Pasta',e:'🍝',c:['gluten'],pro:'Lower cost, quick and familiar.',con:'Fresh pasta often contains egg.'},
+ {n:'Chickpea or rice pasta',e:'🍝',pro:'An option if you avoid wheat.',con:'Usually costs more than wheat pasta.'},
+ {n:'Frozen vegetables',e:'🥦',pro:'Ready to use. Less waste.',con:'Texture can be softer than fresh.'},
+ {n:'Canned tomatoes',e:'🍅',pro:'Lower cost base for sauces, soups and chili.',con:'Needs other ingredients to become a meal.'},
+ {n:'Peanut butter',e:'🥜',c:['peanuts'],pro:'Lower cost, filling and ready to use.',con:'Easy to go through quickly.'},
+ {n:'Sunflower seed butter',e:'🌻',pro:'Peanut-free spread option.',con:'Often costs more than peanut butter.'},
+ {n:'Flour tortillas',e:'🌯',c:['gluten'],pro:'Turn almost anything into a meal.',con:'Check for lard in some brands.'},
+ {n:'Corn tortillas',e:'🌮',pro:'Usually lower cost.',con:'Best warmed, can crack when cold.'},
+ {n:'Tofu',e:'🧈',c:['soy'],pro:'Often lower cost per serving than many specialty proteins.',con:'Requires preparation to taste its best.'},
+ {n:'Seasonal produce',e:'🍎',pro:'Often lower cost and better flavor when in season.',con:'Availability changes through the year.'},
+ {n:'Cabbage, carrots and onions',e:'🥕',pro:'Lower cost and long lasting.',con:'Requires chopping.'},
+ {n:'Bananas',e:'🍌',pro:'Lower cost snack and baking helper.',con:'Ripen quickly. Freeze extras.'},
+ {n:'Popcorn kernels',e:'🍿',pro:'Very low cost snack.',con:'Requires popping.'}
+];
+
+const BUILDER = {
+ bowl:{n:'Bowl',e:'🥗',steps:[
+  {l:'Base',h:'Rice, quinoa, greens, etc.',o:[{n:'Rice'},{n:'Quinoa'},{n:'Greens'},{n:'Potatoes'},{n:'Noodles'},{n:'Farro',c:['gluten']}]},
+  {l:'Plant protein',h:'Beans, lentils, chickpeas, etc.',o:[{n:'Black beans'},{n:'Chickpeas'},{n:'Lentils'},{n:'Tofu',c:['soy']},{n:'Tempeh',c:['soy']},{n:'Edamame',c:['soy']}]},
+  {l:'Vegetables',h:'Fresh, frozen or roasted',m:1,o:[{n:'Roasted broccoli'},{n:'Corn'},{n:'Peppers'},{n:'Cucumber'},{n:'Sweet potato'},{n:'Cabbage slaw'},{n:'Spinach'}]},
+  {l:'Sauce',h:'Tahini, salsa, vinaigrette, etc.',o:[{n:'Salsa'},{n:'Tahini',c:['sesame']},{n:'Vinaigrette'},{n:'Peanut sauce',c:['peanuts']},{n:'Teriyaki',c:['soy','gluten']},{n:'Hot sauce'}]},
+  {l:'Toppings',h:'Nuts, seeds, herbs, etc.',m:1,o:[{n:'Avocado'},{n:'Cilantro'},{n:'Pumpkin seeds'},{n:'Sesame seeds',c:['sesame']},{n:'Cashews',c:['treenuts']},{n:'Lime'}]}
+ ]},
+ pasta:{n:'Pasta',e:'🍝',steps:[
+  {l:'Pasta',o:[{n:'Wheat pasta',c:['gluten']},{n:'Chickpea pasta'},{n:'Rice pasta'},{n:'Lentil pasta'}]},
+  {l:'Sauce',o:[{n:'Marinara'},{n:'Pesto (no cheese)',c:['treenuts']},{n:'Olive oil and garlic'},{n:'Blended white bean cream'},{n:'Cashew alfredo',c:['treenuts']}]},
+  {l:'Vegetables',m:1,o:[{n:'Spinach'},{n:'Mushrooms'},{n:'Zucchini'},{n:'Cherry tomatoes'},{n:'Broccoli'}]},
+  {l:'Plant protein',opt:1,o:[{n:'White beans'},{n:'Lentils'},{n:'Plant-based meatballs',c:['gluten','soy']},{n:'Chickpeas'}]},
+  {l:'Toppings',m:1,o:[{n:'Nutritional yeast'},{n:'Basil'},{n:'Chili flakes'},{n:'Toasted breadcrumbs',c:['gluten']}]}
+ ]},
+ wrap:{n:'Wrap',e:'🌯',steps:[
+  {l:'Wrap',o:[{n:'Flour tortilla',c:['gluten']},{n:'Corn tortilla'},{n:'Lettuce leaves'},{n:'Rice paper'}]},
+  {l:'Filling',o:[{n:'Hummus',c:['sesame']},{n:'Black beans'},{n:'Buffalo chickpeas'},{n:'Falafel',c:['sesame']},{n:'Tofu strips',c:['soy']}]},
+  {l:'Vegetables',m:1,o:[{n:'Lettuce'},{n:'Tomato'},{n:'Cucumber'},{n:'Shredded carrot'},{n:'Peppers'}]},
+  {l:'Sauce',o:[{n:'Salsa'},{n:'Plant mayo'},{n:'Tahini',c:['sesame']},{n:'Hot sauce'},{n:'Guacamole'}]}
+ ]},
+ sandwich:{n:'Sandwich',e:'🥪',steps:[
+  {l:'Bread',o:[{n:'Sliced bread',c:['gluten']},{n:'Gluten-free bread'},{n:'Bagel',c:['gluten']},{n:'Roll',c:['gluten']}]},
+  {l:'Main filling',o:[{n:'Chickpea salad'},{n:'Hummus',c:['sesame']},{n:'Peanut butter',c:['peanuts']},{n:'Plant deli slices',c:['gluten','soy']},{n:'Avocado'}]},
+  {l:'Vegetables',m:1,o:[{n:'Lettuce'},{n:'Tomato'},{n:'Pickles'},{n:'Onion'},{n:'Sprouts'}]},
+  {l:'Spread',o:[{n:'Mustard'},{n:'Plant mayo'},{n:'Jam'},{n:'Pesto (no cheese)',c:['treenuts']}]}
+ ]},
+ stirfry:{n:'Stir-fry',e:'🥡',steps:[
+  {l:'Base',o:[{n:'Rice'},{n:'Rice noodles'},{n:'Wheat noodles',c:['gluten']},{n:'Cauliflower rice'}]},
+  {l:'Plant protein',o:[{n:'Tofu',c:['soy']},{n:'Edamame',c:['soy']},{n:'Chickpeas'},{n:'Cashews',c:['treenuts']},{n:'Peanuts',c:['peanuts']}]},
+  {l:'Vegetables',m:1,o:[{n:'Frozen stir-fry mix'},{n:'Broccoli'},{n:'Snap peas'},{n:'Carrots'},{n:'Bok choy'}]},
+  {l:'Sauce',o:[{n:'Soy sauce and garlic',c:['soy','gluten']},{n:'Coconut aminos',c:['coconut']},{n:'Peanut sauce',c:['peanuts']},{n:'Sweet chili'}]}
+ ]},
+ breakfast:{n:'Breakfast',e:'🍳',steps:[
+  {l:'Base',o:[{n:'Oats'},{n:'Toast',c:['gluten']},{n:'Potatoes'},{n:'Plant yogurt'},{n:'Tortilla',c:['gluten']}]},
+  {l:'Protein',opt:1,o:[{n:'Tofu scramble',c:['soy']},{n:'Black beans'},{n:'Peanut butter',c:['peanuts']},{n:'Chia seeds'},{n:'Sunflower seed butter'}]},
+  {l:'Fruit or veg',m:1,o:[{n:'Berries'},{n:'Banana'},{n:'Spinach'},{n:'Peppers'},{n:'Salsa'}]},
+  {l:'Toppings',m:1,o:[{n:'Cinnamon'},{n:'Maple syrup'},{n:'Granola'},{n:'Hot sauce'}]}
+ ]},
+ soup:{n:'Soup',e:'🍲',steps:[
+  {l:'Broth base',o:[{n:'Vegetable broth'},{n:'Tomato'},{n:'Coconut curry',c:['coconut']},{n:'Miso',c:['soy']}]},
+  {l:'Protein',o:[{n:'Lentils'},{n:'White beans'},{n:'Chickpeas'},{n:'Tofu',c:['soy']}]},
+  {l:'Vegetables',m:1,o:[{n:'Carrots'},{n:'Celery'},{n:'Potatoes'},{n:'Kale'},{n:'Frozen mixed veg'}]},
+  {l:'Extras',m:1,o:[{n:'Pasta',c:['gluten']},{n:'Rice'},{n:'Crusty bread',c:['gluten']},{n:'Herbs'}]}
+ ]},
+ snack:{n:'Snack plate',e:'🍱',steps:[
+  {l:'Dip',o:[{n:'Hummus',c:['sesame']},{n:'Guacamole'},{n:'Salsa'},{n:'White bean dip'},{n:'Peanut butter',c:['peanuts']}]},
+  {l:'Crunch',m:1,o:[{n:'Crackers',c:['gluten']},{n:'Tortilla chips'},{n:'Pretzels',c:['gluten']},{n:'Rice cakes'}]},
+  {l:'Fresh',m:1,o:[{n:'Carrot sticks'},{n:'Cucumber'},{n:'Apple slices'},{n:'Grapes'},{n:'Cherry tomatoes'}]},
+  {l:'Extras',m:1,o:[{n:'Olives'},{n:'Roasted chickpeas'},{n:'Almonds',c:['treenuts']},{n:'Pickles'}]}
+ ]},
+ salad:{n:'Salad',e:'🥬',steps:[
+  {l:'Greens',o:[{n:'Romaine'},{n:'Spinach'},{n:'Mixed greens'},{n:'Kale'}]},
+  {l:'Protein',o:[{n:'Chickpeas'},{n:'Lentils'},{n:'Tofu feta',c:['soy']},{n:'Black beans'}]},
+  {l:'Vegetables',m:1,o:[{n:'Cucumber'},{n:'Tomato'},{n:'Corn'},{n:'Roasted beets'},{n:'Peppers'}]},
+  {l:'Dressing',o:[{n:'Vinaigrette'},{n:'Tahini lemon',c:['sesame']},{n:'Salsa'},{n:'Plant ranch'}]},
+  {l:'Toppings',m:1,o:[{n:'Sunflower seeds'},{n:'Croutons',c:['gluten']},{n:'Walnuts',c:['treenuts']},{n:'Avocado'}]}
+ ]}
+};
+
+/* Meal concepts for "I have no idea what to eat". m: meals, eff 0 none/1 quick/2 some, p: priorities it suits */
+const IDEAS = [
+ {n:'Peanut butter banana toast',m:['b','s'],eff:0,p:['low','bal','conv'],c:['peanuts','gluten'],k:'bread peanut butter banana',d:'Toast, peanut butter, sliced banana.'},
+ {n:'Overnight oats',m:['b'],eff:0,p:['low','bal'],k:'oats plant milk fruit chia',d:'Oats soaked in plant milk with fruit.'},
+ {n:'Cereal with plant milk and fruit',m:['b','s'],eff:0,p:['bal','conv'],k:'cereal milk fruit',d:'Check the cereal label for milk or honey.'},
+ {n:'Plant yogurt parfait',m:['b','s'],eff:0,p:['bal','conv'],k:'yogurt granola berries',d:'Yogurt, fruit and granola.'},
+ {n:'Smoothie',m:['b','s'],eff:0,p:['bal','conv'],k:'frozen fruit banana milk berries',d:'Frozen fruit, plant milk, and a spoon of seed or nut butter.'},
+ {n:'Tofu scramble with toast',m:['b','l'],eff:1,p:['low','bal'],c:['soy'],k:'tofu bread spinach peppers',d:'Crumbled tofu with seasoning and any veggies.'},
+ {n:'Breakfast burrito',m:['b','l'],eff:2,p:['low','bal'],c:['gluten'],k:'tortilla potatoes black beans salsa',d:'Potatoes, beans and salsa in a tortilla.'},
+ {n:'Oatmeal with fruit',m:['b'],eff:1,p:['low'],k:'oats banana berries',d:'Stovetop or microwave oats.'},
+ {n:'Hummus veggie wrap',m:['l','d'],eff:0,p:['low','bal','conv'],c:['sesame','gluten'],k:'hummus tortilla cucumber carrots',d:'Hummus and crunchy veggies.'},
+ {n:'Chickpea salad sandwich',m:['l'],eff:0,p:['low','bal'],c:['gluten'],k:'chickpeas bread mayo pickles',d:'Mashed chickpeas with plant mayo and pickles.'},
+ {n:'Bean and cheese-less quesadilla',m:['l','d','s'],eff:1,p:['low','bal'],k:'tortilla refried beans salsa',d:'Refried beans and salsa in a toasted tortilla.'},
+ {n:'Frozen veggie burger',m:['l','d'],eff:1,p:['conv','bal'],k:'burger bun lettuce',d:'Heat, then build the usual way.'},
+ {n:'Canned soup and crackers',m:['l','d'],eff:1,p:['conv'],k:'soup crackers',d:'Pick a plant-based soup. Add frozen veggies to stretch it.'},
+ {n:'Rice and beans with salsa',m:['l','d'],eff:1,p:['low'],k:'rice beans salsa microwave',d:'Microwave rice, canned beans and salsa.'},
+ {n:'Burrito bowl',m:['l','d'],eff:1,p:['low','bal'],k:'rice black beans corn salsa avocado',d:'Rice, beans, corn, salsa and avocado.'},
+ {n:'Pasta with marinara and white beans',m:['d'],eff:2,p:['low','bal'],c:['gluten'],k:'pasta marinara white beans spinach',d:'Stir beans and greens into jarred sauce.'},
+ {n:'Lentil tacos',m:['d'],eff:2,p:['low'],k:'lentils tortillas salsa',d:'Lentils with taco seasoning and your usual toppings.'},
+ {n:'Frozen stir-fry with tofu',m:['d'],eff:2,p:['bal'],c:['soy'],k:'tofu frozen vegetables rice soy sauce',d:'Frozen stir-fry veg, tofu, sauce and rice.'},
+ {n:'Chickpea curry',m:['d'],eff:2,p:['low','bal'],c:['coconut'],k:'chickpeas coconut milk curry rice',d:'Chickpeas simmered in curry and coconut milk.'},
+ {n:'Loaded baked potato',m:['l','d'],eff:1,p:['low'],k:'potatoes beans salsa broccoli',d:'Microwave a potato. Top with beans, salsa and broccoli.'},
+ {n:'Frozen plant-based burrito',m:['l','d'],eff:1,p:['conv'],c:['gluten'],k:'burrito frozen',d:'Heat and add salsa or guacamole.'},
+ {n:'Plant-based nuggets and veggies',m:['l','d'],eff:1,p:['conv'],c:['soy','gluten'],k:'nuggets frozen vegetables',d:'Oven or air fryer, with a dipping sauce.'},
+ {n:'Snack plate',m:['l','s'],eff:0,p:['low','bal','conv'],k:'hummus crackers carrots fruit',d:'Dip, something crunchy, and fresh produce.'},
+ {n:'Popcorn',m:['s'],eff:1,p:['low'],k:'popcorn',d:'Add nutritional yeast for a cheesy flavor.'},
+ {n:'Apple and peanut butter',m:['s'],eff:0,p:['low','bal','conv'],c:['peanuts'],k:'apple peanut butter',d:'Classic and filling.'},
+ {n:'Edamame with salt',m:['s'],eff:1,p:['low','bal'],c:['soy'],k:'edamame frozen',d:'Microwave frozen edamame.'},
+ {n:'Trail mix',m:['s'],eff:0,p:['conv','bal'],c:['peanuts','treenuts'],k:'nuts trail mix',d:'Grab a handful.'},
+ {n:'Chips, salsa and guacamole',m:['s'],eff:0,p:['conv','bal'],k:'tortilla chips salsa guacamole avocado',d:'Ready in a minute.'},
+ {n:'Salad kit plus chickpeas',m:['l'],eff:0,p:['conv','bal'],k:'salad kit chickpeas',d:'Check the kit dressing for dairy.'},
+ {n:'Veggie fried rice',m:['d'],eff:2,p:['low','bal'],c:['soy'],k:'rice frozen vegetables soy sauce tofu',d:'Day-old rice, frozen veg and sauce.'}
+];
+
+const PROBLEMS = {
+ what:{n:"I don't know what to eat",plan:['Pick one meal of the day to focus on.','Choose two ideas you would genuinely enjoy.','Save them so you have a short go-to list.'],tools:['noidea','builder','mymeal']},
+ spend:{n:"I'm spending too much",plan:['Build most meals around lower-cost staples like beans, lentils, rice and oats.','Try a whole-food swap before buying a specialty product.','Keep specialty products for meals where they matter most to you.'],tools:['staples','swap']},
+ cook:{n:'I hate cooking',plan:['Lean on ready-to-use foods: canned beans, frozen veg, microwave rice.','Use meal formulas instead of recipes.','Stock two or three convenience meals you like.'],tools:['builder','pantry','noidea']},
+ time:{n:"I don't have enough time",plan:['Pick meals that take 10 minutes or less.','Keep a short list of freezer backups.','Shop from a saved list so trips are faster.'],tools:['noidea','grocery','pantry']},
+ miss:{n:'I miss certain foods',plan:['Name the specific thing you miss: flavor, texture, or the ritual.','Try two different approaches before deciding.','Missing something is normal and does not undo your progress.'],tools:['swap']},
+ family:{n:"My family doesn't eat this way",plan:['Start with meals that are easy to split: tacos, bowls, pasta.','Make the base plant-based and let others add toppings.','Find one shared meal everyone likes.'],tools:['mymeal','builder','social']},
+ out:{n:'Eating out is difficult',plan:['Check menus before you go.','Save notes for places you visit often.','Have a backup plan so you are never stuck.'],tools:['eatout','social']},
+ bored:{n:"I'm bored with my food",plan:['Change one element: a new sauce or a new base.','Try a meal format you have not used yet.','Plant-base one more familiar meal.'],tools:['builder','mymeal','swap']},
+ shop:{n:'Grocery shopping overwhelms me',plan:['Start with a short starter pantry, not a perfect one.','Shop from a list organized by store section.','Save items you buy often so you can reuse them.'],tools:['pantry','grocery']},
+ habits:{n:'I keep going back to old habits',plan:['Old habits are part of the process. Your progress is still here.','Make the easiest meal your plant-based one.','Plan ahead for the situations where you slip back most.'],tools:['plan','progress','social']}
+};
+
+const ARTICLES = [
+ {id:'101',n:'Plant-Based Eating 101',e:'🌱',body:`<p>In this app, plant-based eating means building meals from foods that come from plants: fruits, vegetables, grains, legumes (like beans, lentils and peas), nuts and seeds.</p><p>You decide how far you want to go. Some people want more plant-based meals, some want to be mostly plant-based, and some want to be fully plant-based.</p><h3>Where to begin</h3><ul><li>Start with foods you already eat that happen to be plant-based.</li><li>Add a few new staples at a time.</li><li>Change one meal before changing everything.</li></ul>`},
+ {id:'start',n:'How to Start Without Changing Everything Overnight',e:'🐢',body:`<p>Most people find a gradual start easier. Pick the meal that feels easiest, often breakfast or lunch, and make that one plant-based first.</p><p>Once it feels normal, move to the next meal. Progress builds up. A meal that did not go as planned does not erase anything.</p><h3>Try this week</h3><ul><li>Choose your easiest meal.</li><li>Find two or three versions you like.</li><li>Repeat them until they feel automatic.</li></ul>`},
+ {id:'labels',n:'Reading Food Labels',e:'🏷️',body:`<p>Labels help you spot animal-derived ingredients in packaged food.</p><h3>Look for</h3><ul><li>Milk ingredients: milk, whey, casein, butter, cream.</li><li>Egg ingredients: egg, egg whites, albumin.</li><li>Other: gelatin, honey, anchovies, lard.</li></ul><p>Some products say "vegan" or "plant-based" on the front, which can speed things up. Formulas change, so check labels from time to time.</p><p>If you avoid certain foods for health reasons, read the allergen statement on each product. This app cannot confirm that a product is free from any ingredient or cross-contact.</p>`},
+ {id:'pantry',n:'Building a Starter Pantry',e:'🥫',body:`<p>You do not need a huge, perfect pantry. Start with a handful of items you will actually use.</p><ul><li>One or two grains, such as rice or oats.</li><li>Two kinds of beans.</li><li>A frozen vegetable.</li><li>A sauce you like.</li><li>A snack you enjoy.</li></ul><p>Add more as you find meals you like. The Pantry Builder can help you pick.</p>`},
+ {id:'familiar',n:'Making Familiar Meals Plant-Based',e:'🌮',body:`<p>The fastest path is often the meals you already know. Tacos, pasta, stir-fry and sandwiches work well because you only change one or two parts.</p><p>Keep the sauces, seasonings and toppings you love. Swap the animal products. That way the meal still tastes like yours.</p>`},
+ {id:'budget',n:'Plant-Based Eating on a Budget',e:'💰',body:`<p>Plant-based staples like beans, lentils, rice, oats, potatoes and frozen vegetables are often among the lower-cost foods in a store.</p><ul><li>Build most meals around staples.</li><li>Use specialty products where they matter most to you.</li><li>Buy frozen produce to reduce waste.</li><li>Shop from a list.</li></ul><p>Prices vary by store, location, season and brand, so compare where you shop.</p>`},
+ {id:'out',n:'Eating Out',e:'🍽️',body:`<p>Many cuisines have naturally plant-based dishes: bean burritos, vegetable curries, falafel, veggie stir-fries and pasta with marinara.</p><ul><li>Look at the menu before you go.</li><li>Look for build-your-own options.</li><li>Ask about ingredients if you are unsure.</li><li>Have a backup option in mind.</li></ul><p>Save notes on places you visit so ordering gets easier each time.</p>`},
+ {id:'stick',n:'Making Your New Routine Stick',e:'🔁',body:`<p>Routines stick when they are easy. Keep a short list of go-to meals, reuse your grocery list, and restock staples before you run out.</p><p>Expect some meals to not go as planned. That is part of changing any habit. Look at what you have built so far rather than what went wrong.</p>`}
+];
+
+const RECIPE_RESOURCES = [
+ {id:'smoothies50',n:'50 Plant-Based Smoothies',e:'🥤',d:'A collection of plant-based smoothie recipes.'},
+ {id:'treats',n:'Plant-Based Treats',e:'🍪',d:'A collection of plant-based treat recipes.'}
+];
+/* Access placeholder: 'coming' | 'included' | 'owned' | 'locked'. A future account system can set these per customer. */
+const RESOURCE_ACCESS_DEFAULT = {smoothies50:'coming',treats:'coming'};
+
+const TOOLS = [
+ {id:'profile',cat:'start',n:'My Plant-Based Profile',e:'👤',d:'Your goals, cooking style and foods to avoid.'},
+ {id:'plan',cat:'start',n:'My Transition Plan',e:'🗺️',d:'Six stages, at your own pace.'},
+ {id:'meaning',cat:'start',n:'What Does Plant-Based Mean?',e:'❓',d:'A simple food reference.'},
+ {id:'swap',cat:'swap',n:'Swap What I Already Eat',e:'🔄',d:'Alternatives for foods you eat now or miss.'},
+ {id:'mymeal',cat:'swap',n:'Plant-Base My Meal',e:'🌮',d:'Convert meals you already know.'},
+ {id:'pantry',cat:'shop',n:'Pantry Builder',e:'🥫',d:'Pick a starter pantry that fits how you cook.'},
+ {id:'grocery',cat:'shop',n:'Grocery List Builder',e:'🛒',d:'A reusable list organized by store section.'},
+ {id:'staples',cat:'shop',n:'Budget-Friendly Staples',e:'🍚',d:'Lower-cost foods and their tradeoffs.'},
+ {id:'builder',cat:'eat',n:'Easy Meal Builder',e:'🥣',d:'Meal formulas, not recipes.'},
+ {id:'noidea',cat:'eat',n:'I Have No Idea What to Eat',e:'🤷',d:'A few ideas based on how much time you have.'},
+ {id:'eatout',cat:'eat',n:'Eating Out Planner',e:'🍽️',d:'Prepare and save restaurant notes.'},
+ {id:'social',cat:'eat',n:'Social Situations Planner',e:'🎉',d:'Family meals, holidays, work events and more.'},
+ {id:'progress',cat:'maintain',n:'Plant-Based Progress',e:'🌿',d:'Milestones you have reached.'},
+ {id:'playbook',cat:'maintain',n:'My Plant-Based Playbook',e:'📒',d:'Everything you have saved.'},
+ {id:'solver',cat:'maintain',n:'Problem Solver',e:'🛠️',d:'A short plan for whatever is hard right now.'},
+ {id:'library',cat:'resources',n:'Plant-Based Starter Library',e:'📚',d:'Short beginner guides.'}
+];
+const CATS = {
+ start:{n:'Start',d:'Build your transition.',e:'🌱',bg:'#E5EFDD'},
+ swap:{n:'Swap',d:'Plant-base foods you already eat.',e:'🔄',bg:'#FCE3D6'},
+ shop:{n:'Shop',d:'Your pantry, grocery list and low-cost staples.',e:'🛒',bg:'#E0EEDD'},
+ eat:{n:'Eat',d:'Figure out what to actually eat.',e:'🍴',bg:'#FDE7CF'},
+ maintain:{n:'Maintain',d:'Make it work long-term.',e:'📈',bg:'#DDEAF6'},
+ resources:{n:'Resources',d:'Learn, get answers and more.',e:'📘',bg:'#E3E7F5'}
+};
+
+/* =========================================================
+   STATE + PERSISTENCE
+   One JSON document per user and product, so it can later map to a
+   shared customer account (productId + userId) in a larger ecosystem.
+   ========================================================= */
+const PRODUCT_ID = 'plant-based-transition';
+const LS_KEY = 'pbts:v1';
+function defaults(){
+  return {
+    schemaVersion:1, productId:PRODUCT_ID, updatedAt:0,
+    profile:{completed:false, household:null, budget:null, current:null, goal:null, transition:null, cooking:null, priority:null, frequency:null, frequencyOther:'', enjoy:[], enjoyCustom:[], avoid:[], avoidCustom:[], avoidNone:false, challenge:[], challengeOther:''},
+    plan:{done:{}, easyMeal:null},
+    progress:{m:{}, weeks:{}},
+    pantry:{},
+    grocery:{items:[], frequent:[]},
+    budget:null,
+    strategy:{off:{}, custom:[], notes:''},
+    favorites:[],
+    restaurants:[],
+    social:[],
+    notes:[],
+    access:{}
+  };
+}
+function migrate(s){
+  const d = defaults();
+  const out = Object.assign(d, s||{});
+  out.profile = Object.assign(defaults().profile, (s||{}).profile||{});
+  out.plan = Object.assign(defaults().plan, (s||{}).plan||{});
+  out.progress = Object.assign(defaults().progress, (s||{}).progress||{});
+  out.grocery = Object.assign(defaults().grocery, (s||{}).grocery||{});
+  out.strategy = Object.assign(defaults().strategy, (s||{}).strategy||{});
+  return out;
+}
+let S = defaults();
+try{ const raw = localStorage.getItem(LS_KEY); if(raw) S = migrate(JSON.parse(raw)); }catch(e){}
+
+let cloudRef = null, cloudTimer = null;
+function save(){
+  S.updatedAt = Date.now();
+  try{ localStorage.setItem(LS_KEY, JSON.stringify(S)); }catch(e){}
+  if(cloudRef){ clearTimeout(cloudTimer); cloudTimer = setTimeout(()=>{ cloudRef.set({state:JSON.parse(JSON.stringify(S))}).catch(()=>{}); }, 900); }
+}
+(async function connectCloud(){
+  try{
+    if(!(window.claude && typeof window.claude.use === 'function')) return;
+    const [db, user] = await Promise.all([window.claude.use('db'), window.claude.use('user')]);
+    if(!db || !user) return;
+    const uid = await user.id(); if(!uid) return;
+    const ref = db.doc('data/users/' + uid + '/' + PRODUCT_ID);
+    const snap = await ref.get();
+    const remote = snap.exists ? (snap.data()||{}).state : null;
+    cloudRef = ref;
+    if(remote && (remote.updatedAt||0) > (S.updatedAt||0)){
+      S = migrate(JSON.parse(JSON.stringify(remote)));  /* copy: saved data comes back read-only */
+      try{ localStorage.setItem(LS_KEY, JSON.stringify(S)); }catch(e){}
+      render();
+    } else if(S.updatedAt){ ref.set({state:JSON.parse(JSON.stringify(S))}).catch(()=>{}); }
+  }catch(e){ /* stays local-only */ }
+})();
+
+/* =========================================================
+   HELPERS
+   ========================================================= */
+const $ = s => document.querySelector(s);
+const uid = () => Math.random().toString(36).slice(2,10);
+const esc = s => String(s==null?'':s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const P = () => S.profile;
+function getPath(o,p){ return p.split('.').reduce((a,k)=>a==null?a:a[k], o); }
+function setPath(o,p,v){ const ks=p.split('.'); let a=o; ks.slice(0,-1).forEach(k=>{ if(a[k]==null) a[k]={}; a=a[k]; }); a[ks[ks.length-1]]=v; }
+let toastT;
+function toast(msg){ const t=$('#toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(toastT); toastT=setTimeout(()=>t.classList.remove('show'),2000); }
+const money = n => '$' + (Math.round(n)).toLocaleString();
+
+/* Appearance: saved on this device only */
+const THEME_KEY = 'pbts:theme';
+function getTheme(){ let t=null; try{ t=S.theme; }catch(e){} if(!t){ try{ t = localStorage.getItem(THEME_KEY); }catch(e){} } return t==='dark' ? 'dark' : 'light'; }
+function applyTheme(t){ document.documentElement.setAttribute('data-theme', t==='dark' ? 'dark' : 'light'); }
+try{ applyTheme(localStorage.getItem(THEME_KEY)); }catch(e){ applyTheme('light'); }
+const COPYRIGHT = '© 2026 My World Nest. All rights reserved.';
+const APP_VERSION = '1.0';
+
+/* Foods to Avoid: the one filter every tool uses */
+function customAvoidWords(){ return (P().avoidCustom||[]).map(w=>w.toLowerCase().trim()).filter(Boolean); }
+function allowed(item){
+  const av = P().avoid||[];
+  if(item.c && item.c.some(x=>av.includes(x))) return false;
+  const text = ((item.n||'')+' '+(item.k||'')).toLowerCase();
+  if(customAvoidWords().some(w=>text.includes(w))) return false;
+  return true;
+}
+function filterList(list){
+  const kept = list.filter(allowed);
+  const removed = list.filter(i=>!allowed(i));
+  const labels = new Set();
+  removed.forEach(i=>{
+    (i.c||[]).forEach(c=>{ if((P().avoid||[]).includes(c)) labels.add(AVOID.find(a=>a.id===c).label); });
+    const text=((i.n||'')+' '+(i.k||'')).toLowerCase();
+    customAvoidWords().forEach(w=>{ if(text.includes(w)) labels.add(w); });
+  });
+  return {kept, removedCount:removed.length, labels:[...labels]};
+}
+function excludedNote(labels){
+  if(!labels.length) return '';
+  const list = labels.length===1 ? labels[0] : labels.slice(0,-1).join(', ')+' and '+labels[labels.length-1];
+  return `<div class="note"><span class="i">ℹ️</span><span>${esc(list.charAt(0).toUpperCase()+list.slice(1))} ${labels.length===1?'has':'have'} been left out of these suggestions based on your profile. <a href="#/profile/5">Edit</a></span></div>`;
+}
+const LABEL_DISCLAIMER = `We'll use this to avoid suggesting foods you've told us you don't eat. Always check product labels for your individual dietary needs.`;
+
+function cooking(){ const c=P().cooking; return c==null?2:Number(c); }
+function sortByPriority(items, prio){
+  const score = i => prio==='low' ? (i.cost*10 - i.conv + (i.kind==='product'?5:0)) : prio==='conv' ? ((4-i.conv)*10 + i.cost) : (i.cost + (4-i.conv))*10 + (i.kind==='product'?1:0);
+  return items.slice().sort((a,b)=>score(a)-score(b));
+}
+const costWord = c => ({1:'Generally lower cost',2:'Moderate cost',3:'Often higher cost'})[c];
+
+/* Favorites */
+function favKey(type,title){ return type+'::'+title; }
+function isFav(type,title){ return S.favorites.some(f=>favKey(f.type,f.title)===favKey(type,title)); }
+function toggleFav(type,title,detail){
+  const k=favKey(type,title);
+  const i=S.favorites.findIndex(f=>favKey(f.type,f.title)===k);
+  if(i>=0){ S.favorites.splice(i,1); toast('Removed from your Playbook'); }
+  else { S.favorites.push({id:uid(),type,title,detail:detail||'',at:Date.now()}); toast('Saved to your Playbook'); }
+  save();
+}
+function heart(type,title,detail){
+  const on=isFav(type,title);
+  return `<button class="heart" data-act="fav" data-type="${esc(type)}" data-title="${esc(title)}" data-detail="${esc(detail||'')}" aria-pressed="${on}" aria-label="${on?'Remove from':'Save to'} Playbook: ${esc(title)}">${on?'♥':'♡'}</button>`;
+}
+const FAV_TYPES = {staple:'Staples',swap:'Swaps',meal:'Meal combinations',idea:'Meal ideas',grocery:'Grocery items',product:'Convenience products',eatout:'Eating-out strategies',note:'Personal notes'};
+
+/* =========================================================
+   TRANSITION PLAN (personalized from profile)
+   ========================================================= */
+const STAGE_COLORS = ['#2F6B3A','#E6A52D','#D65A3C','#C8453A','#6B4C9E','#2E72BD'];
+function stages(){
+  const p=P(), ch=p.challenge||[], ck=cooking();
+  const easy = S.plan.easyMeal ? ({b:'breakfast',l:'lunch',d:'dinner',s:'snacks'})[S.plan.easyMeal] : 'your easiest meal';
+  const st = [
+    {n:'Start with the easiest meals',d:'Replace whichever meal is easiest for you.',tasks:[
+      {id:'s1a',t:'Choose the meal that feels easiest to start with',pick:true},
+      {id:'s1b',t:`Find two or three plant-based options for ${easy}`,link:'noidea'},
+      {id:'s1c',t:`Have ${easy} plant-based three times, on any days you like`},
+      {id:'s1d',t:'Save the options you liked to your Playbook',link:'playbook'}
+    ]},
+    {n:'Build familiar plant-based meals',d:'Start converting foods you already eat.',tasks:[
+      {id:'s2a',t:'Pick three meals you already eat often'},
+      {id:'s2b',t:'Plant-base one of them',link:'mymeal'},
+      {id:'s2c',t:'Try one swap for a food you use a lot',link:'swap'},
+      {id:'s2d',t:'Build a meal with a formula',link:'builder'}
+    ]},
+    {n:'Build the grocery routine',d:'Establish staples and shopping habits.',tasks:[
+      {id:'s3a',t:'Build your starter pantry',link:'pantry'},
+      {id:'s3b',t:'Browse budget-friendly staples',link:'staples'},
+      {id:'s3c',t:'Make your first plant-based grocery list',link:'grocery'},
+      {id:'s3d',t:'Complete a grocery shop'}
+    ]},
+    {n:'Handle harder meals',d:'Work through the foods you find more difficult to replace.',tasks:[
+      {id:'s4a',t:'Name the food you miss most',link:'swap'},
+      {id:'s4b',t:'Try two different approaches for it'},
+      {id:'s4c',t:'Plant-base the meal that feels hardest right now',link:'mymeal'}
+    ]},
+    {n:'Eating outside the house',d:'Restaurants, work, family, travel, etc.',tasks:[
+      {id:'s5a',t:'Save notes for one restaurant you visit',link:'eatout'},
+      {id:'s5b',t:'Plan for one upcoming social situation',link:'social'},
+      {id:'s5c',t:'Keep a backup snack in your bag or car'}
+    ]},
+    {n:'Make it normal',d:'Build routines you can maintain.',tasks:[
+      {id:'s6a',t:'Have five go-to meals you enjoy',link:'playbook'},
+      {id:'s6b',t:'Save your regular grocery items for reuse',link:'grocery'},
+      {id:'s6c',t:'Check in with the Problem Solver when something gets hard',link:'solver'},
+      {id:'s6d',t:'Revisit your goal and adjust if you want',link:'profile'}
+    ]}
+  ];
+  if(ck<=1) st[2].tasks.splice(1,0,{id:'s3x',t:'Pick three convenience foods you would actually buy',link:'pantry'});
+  if(ch.includes('household')) st[1].tasks.push({id:'s2x',t:'Find one meal the whole household enjoys',link:'mymeal'});
+  if(ch.includes('cost')) st[2].tasks.push({id:'s3y',t:'Try one lower-cost swap',link:'swap'});
+  if(ch.includes('time')) st[0].tasks.push({id:'s1x',t:'Pick one no-cook option for busy days',link:'noidea'});
+  if(ch.includes('overwhelmed')) st[0].tasks.unshift({id:'s1o',t:'Read: How to start without changing everything overnight',link:'article/start'});
+  if(ch.includes('out')) st[4].tasks.push({id:'s5x',t:'Look up one menu before your next meal out',link:'eatout'});
+  (p.enjoy||[]).slice(0,1).forEach(f=>st[1].tasks.push({id:'s2e',t:`Make a plant-based version of ${f.toLowerCase()}`,link:'mymeal'}));
+  return st.map((s,i)=>{ const done=s.tasks.filter(t=>S.plan.done[t.id]).length; return {...s, i, done, total:s.tasks.length, complete: done===s.tasks.length}; });
+}
+function planStats(){ const st=stages(); const done=st.reduce((a,s)=>a+s.done,0), total=st.reduce((a,s)=>a+s.total,0); return {st, done, total, pct: total?Math.round(done/total*100):0, stagesDone: st.filter(s=>s.complete).length}; }
+
+/* =========================================================
+   GUIDED TOUR (spotlight). Walks to each page and highlights the part being explained.
+   Shows once, and can be replayed from Home or Settings.
+   ========================================================= */
+const TOUR = [
+  {route:'home', sel:['.hero'], e:'👋', h:'Welcome!', b:`<p>This app helps you move toward plant-based eating one small step at a time. You don't have to change everything at once.</p><p>This quick tour walks you through how it works.</p>`},
+  {route:'profile/1', sel:['#view .q'], e:'👤', h:'Start with your profile', b:`<p>This is your profile. It's a few quick questions you answer once, and every tool in the app uses your answers.</p><p><b>Foods to avoid</b> are left out of every suggestion, and <b>your cooking style</b> shapes the ideas you get. You can change your answers any time.</p>`},
+  {route:'plan', sel:['#view .stage'], e:'🗺️', h:'Follow your transition plan', b:`<p>Your plan has <b>6 stages</b>, starting with the easiest meals. Tap a stage to see its small steps and check them off.</p><p>Work on them in any order. There are no deadlines.</p>`},
+  {route:'home', sel:['.cats'], e:'🧰', h:'Use the tools when you need them', b:`<p>The tools are grouped into sections: <b>Swap</b>, <b>Shop</b>, <b>Eat</b>, <b>Maintain</b> and <b>Resources</b>. Open any section to see what's inside.</p>`},
+  {route:'swap/chicken', sel:['#view .item'], e:'♡', h:'Save what you like', b:`<p>Tap the <b>♡</b> on any swap, staple or meal idea to save it to your <b>Playbook</b>.</p><p>Over time it becomes your own list of plant-based foods you know you enjoy.</p>`},
+  {route:'progress', sel:['#view .grid2'], e:'🌿', h:'Watch your progress grow', b:`<p>Progress shows your milestones and completed stages. Your progress only adds up. Eating something that isn't plant-based never erases it.</p>`},
+  {route:'home', sel:['.side a[href="#/settings"]', '.homebar .gear'], e:'⚙️', h:'Settings', b:`<p>Switch between light and dark, back up your data, or replay this tour from <b>Settings</b>.</p>`},
+  {route:'profile/1', sel:['#view .q'], e:'🌱', h:"You're all set", final:true, b:`<p>Let's start with your profile. Answer the first question below, then tap <b>Next</b>.</p>`}
+];
+let tourEls = null;
+function visibleEl(sels){
+  for(const sel of sels||[]){ const el=document.querySelector(sel); if(el){ const r=el.getBoundingClientRect(); if(r.width>0 && r.height>0) return el; } }
+  return null;
+}
+function tourHTML(i){
+  const t=TOUR[i], last=i===TOUR.length-1, done=P().completed;
+  const finalBtn = done ? 'Start exploring' : 'Start my profile';
+  return `<div class="tstepline"><span class="tstep">${i+1} OF ${TOUR.length}</span>${last?'':'<button class="btn ghost sm" style="padding:6px 0" data-act="tourEnd">Skip tour</button>'}</div>
+    <h2 id="tourH"><span aria-hidden="true">${t.e}</span> ${t.final&&done?'You\'re all set':t.h}</h2>${t.final&&done?'<p>Your profile is already done. Head to Home to keep going.</p>':t.b}
+    <div class="tdots" aria-hidden="true">${TOUR.map((_,k)=>`<i class="${k===i?'on':''}"></i>`).join('')}</div>
+    <div class="tfoot">${i>0?'<button class="btn sec" data-act="tourPrev">Back</button>':''}${last
+      ? `<button class="btn" style="flex:1" data-act="tourEnd" data-to="${done?'home':''}">${finalBtn}</button>`
+      : `<button class="btn" style="flex:1" data-act="tourNext">${i===0?'Show me around':'Next'}</button>`}</div>`;
+}
+function tourTeardown(){ if(tourEls){ Object.values(tourEls).forEach(e=>e.remove()); tourEls=null; } }
+function renderTour(){
+  if(ui.tour==null){ tourTeardown(); return; }
+  if(!tourEls){
+    tourEls = {block:document.createElement('div'), spot:document.createElement('div'), card:document.createElement('div')};
+    tourEls.block.className='tour-block'; tourEls.spot.className='tour-spot'; tourEls.card.className='tour tour-card';
+    tourEls.card.setAttribute('role','dialog'); tourEls.card.setAttribute('aria-modal','true'); tourEls.card.setAttribute('aria-labelledby','tourH');
+    document.body.append(tourEls.block, tourEls.spot, tourEls.card);
+  }
+  const i=ui.tour, t=TOUR[i];
+  tourEls.card.innerHTML = tourHTML(i);
+  tourEls.card.style.visibility='hidden';
+  const target = '#/'+t.route;
+  const settle = () => {
+    if(ui.tour!==i || !tourEls) return;
+    const el = visibleEl(t.sel);
+    if(el) el.scrollIntoView({block:'center', behavior:'auto'});
+    placeTour();
+    tourEls.card.style.visibility='';
+    const b=tourEls.card.querySelector('.tfoot .btn:last-child'); if(b) b.focus({preventScroll:true});
+  };
+  if(location.hash !== target){ go(t.route); setTimeout(settle, 120); } else setTimeout(settle, 30);
+}
+function placeTour(){
+  if(ui.tour==null || !tourEls) return;
+  const el = visibleEl(TOUR[ui.tour].sel), spot=tourEls.spot, card=tourEls.card;
+  const vw=window.innerWidth, vh=window.innerHeight, cw=card.offsetWidth, ch=card.offsetHeight;
+  if(!el){
+    spot.style.cssText='left:50%;top:50%;width:0;height:0';
+    card.style.left=Math.max(16,(vw-cw)/2)+'px'; card.style.top=Math.max(16,(vh-ch)/2)+'px'; return;
+  }
+  const r=el.getBoundingClientRect(), pad=8;
+  const top=Math.max(6, r.top-pad), h=Math.min(r.height+pad*2, vh-top-6);
+  spot.style.cssText=`left:${r.left-pad}px;top:${top}px;width:${r.width+pad*2}px;height:${h}px`;
+  const left=Math.min(Math.max(16, r.left), vw-cw-16);
+  const below=top+h+12, above=top-ch-12;
+  let y = below+ch < vh-8 ? below : above > 8 ? above : vh-ch-16;
+  card.style.left=left+'px'; card.style.top=y+'px';
+}
+window.addEventListener('resize', placeTour);
+window.addEventListener('scroll', placeTour, {passive:true});
+function startTour(){ ui.tour=0; renderTour(); }
+function endTour(to){ ui.tour=null; if(!S.tourDone){ S.tourDone=true; save(); } renderTour(); if(to) go(to); }
+
+/* =========================================================
+   ROUTER + SHELL
+   ========================================================= */
+const ui = {};
+function route(){ const h=location.hash.replace(/^#\/?/,''); const [r,...rest]=h.split('/'); return {r:r||'home', a:rest}; }
+function go(path){ location.hash = '#/'+path; }
+window.addEventListener('hashchange', ()=>{ render(); window.scrollTo(0,0); });
+
+function renderNav(r){
+  const sec = Object.keys(CATS).map(c=>`<h4>${CATS[c].n}</h4>`+TOOLS.filter(t=>t.cat===c).map(t=>`<a class="nav ${r===t.id?'on':''}" href="#/${t.id}">${t.n}</a>`).join('')).join('');
+  $('#side').innerHTML = `<a class="brand" href="#/home"><span aria-hidden="true">🌿</span> Plant-Based Transition System</a><a class="nav ${r==='home'?'on':''}" href="#/home">Home</a>${sec}<h4>App</h4><a class="nav ${r==='settings'?'on':''}" href="#/settings">⚙️ Settings</a><p class="copy">${COPYRIGHT}</p>`;
+  const tabs=[['home','🏠','Home'],['profile','👤','Profile'],['playbook','♡','Playbook'],['progress','🌿','Progress'],['menu','☰','All tools']];
+  $('#tabbar').innerHTML = tabs.map(([id,i,l])=>`<a href="#/${id}" class="${r===id?'on':''}"><span class="ti" aria-hidden="true">${i}</span>${l}</a>`).join('');
+}
+function topBar(title, backTo, crumb){
+  return `<div class="topbar"><button class="back" data-act="back" data-to="${esc(backTo||'home')}" aria-label="Back">←</button>${crumb?`<span class="crumb">${esc(crumb)}</span>`:''}</div><h1>${esc(title)}</h1>`;
+}
+function toolLink(id){ const t=TOOLS.find(x=>x.id===id); if(!t) return ''; return `<a class="toolrow" href="#/${t.id}"><span class="plate" aria-hidden="true">${t.e}</span><span><b>${esc(t.n)}</b><br><span class="hint">${esc(t.d)}</span></span><span class="chev" aria-hidden="true">›</span></a>`; }
+function profileNudge(){ return P().completed ? '' : `<div class="note" style="margin-bottom:14px"><span class="i">🌱</span><span>Finish <a href="#/profile">your profile</a> so suggestions fit your cooking style and foods to avoid.</span></div>`; }
+
+function render(){
+  applyTheme(getTheme());
+  const {r,a}=route();
+  renderNav(r);
+  const fn = VIEWS[r] || VIEWS.home;
+  $('#view').innerHTML = fn(a);
+  const tn = r==='settings' ? 'Settings' : (TOOLS.find(t=>t.id===r)||{}).n;
+  document.title = (r!=='home' && tn ? tn+' · ' : '') + 'Plant-Based Transition System';
+  if(ui.tour!=null) setTimeout(placeTour, 0);
+}
+
+/* =========================================================
+   VIEWS
+   ========================================================= */
+const VIEWS = {};
+
+VIEWS.home = () => {
+  const p=P(), ps=planStats();
+  const next = ps.st.find(s=>!s.complete);
+  const journey = p.completed ? `
+    <h2 style="font-size:1.25rem">Your journey</h2>
+    <p class="hint" style="margin:.5em 0 0">You're transitioning toward:</p>
+    <p style="margin:0 0 .8em;font-weight:700">${esc(LABEL.goal[p.goal]||'Your own pace')}</p>
+    <div class="row" style="gap:10px;margin-bottom:14px"><div class="bar" style="flex:1"><i style="width:${ps.pct}%"></i></div><span class="hint">${ps.done} of ${ps.total} steps</span></div>
+    <a class="btn block" href="#/plan">Continue your transition →</a>`
+   : `<h2 style="font-size:1.25rem">Your journey starts here</h2>
+    <p class="hint">Answer a few quick questions once. Every tool will use your answers.</p>
+    <a class="btn block" href="#/profile/1">Set up my profile →</a>`;
+  const cats = ['start','swap','shop','eat','maintain','resources'].map(c=>`<a class="cat" href="#/cat/${c}"><span class="ic" style="background:${CATS[c].bg}" aria-hidden="true">${CATS[c].e}</span><span><b>${CATS[c].n.toUpperCase()}</b><span>${CATS[c].d}</span></span></a>`).join('');
+  return `
+  <div class="homebar"><a class="gear" href="#/settings" aria-label="Settings"><span aria-hidden="true">⚙️</span> Settings</a></div>
+  <section class="hero">
+    <span class="bowl" aria-hidden="true">🥗</span>
+    <h1>Plant-Based Transition System</h1>
+    <p>Make plant-based eating work for your food, your budget and your life.</p>
+  </section>
+  <section class="journey">${journey}</section>
+  <button class="tourlink" data-act="tourStart"><span aria-hidden="true">🧭</span> How this app works</button>
+  <nav class="cats" aria-label="Sections">${cats}</nav>
+`;
+};
+
+VIEWS.cat = a => {
+  const c = CATS[a[0]] ? a[0] : 'start';
+  return topBar(CATS[c].n,'home') + `<p class="lede">${esc(CATS[c].d)}</p>` + TOOLS.filter(t=>t.cat===c).map(t=>toolLink(t.id)).join('');
+};
+
+VIEWS.menu = () => {
+  const q=(ui.q||'').toLowerCase();
+  const list = TOOLS.filter(t=>!q || (t.n+' '+t.d).toLowerCase().includes(q));
+  return topBar('All tools','home') + `<div class="field" style="margin:14px 0"><label class="sr" for="toolsearch">Search tools</label><input id="toolsearch" type="text" placeholder="Search tools…" value="${esc(ui.q||'')}" data-live="q"></div>` +
+   (q ? list.map(t=>toolLink(t.id)).join('') || '<div class="empty">No tools match that search.</div>'
+      : Object.keys(CATS).map(c=>`<h3 style="margin:20px 0 8px">${CATS[c].n}</h3>`+TOOLS.filter(t=>t.cat===c).map(t=>toolLink(t.id)).join('')).join('')
+        + `<h3 style="margin:20px 0 8px">App</h3><a class="toolrow" href="#/settings"><span class="plate" aria-hidden="true">⚙️</span><span><b>Settings</b><br><span class="hint">Appearance, backups and about this app.</span></span><span class="chev" aria-hidden="true">›</span></a>`);
+};
+
+/* ---------- Profile ---------- */
+function optList(path, map, multi){
+  const val = getPath(S,path);
+  return Object.entries(map).map(([k,l])=>{
+    const on = multi ? (val||[]).includes(k) : String(val)===String(k);
+    return `<button class="opt ${multi?'sq':''} ${on?'on':''}" data-act="${multi?'toggle':'set'}" data-path="${path}" data-val="${esc(k)}" aria-pressed="${on}"><span class="dot">${on?'✓':''}</span>${esc(l)}</button>`;
+  }).join('');
+}
+function q(icon,title,sub,inner){ return `<div class="q"><div class="qh"><span aria-hidden="true">${icon}</span>${esc(title)}</div>${sub?`<p class="hint" style="margin:.2em 0 .6em">${esc(sub)}</p>`:''}${inner}</div>`; }
+const PSTEPS = 7;
+VIEWS.profile = a => {
+  const p=P();
+  const step = a[0] ? Math.min(PSTEPS, Math.max(1, parseInt(a[0])||1)) : (p.completed ? 0 : 1);
+  if(step===0) return profileSummary();
+  let body='';
+  if(step===1){
+    body = q('👥','Household','How many people are you shopping/cooking for?',`<div class="seg">${Object.entries(LABEL.household).map(([k,l])=>`<button class="${String(p.household)===k?'on':''}" data-act="set" data-path="profile.household" data-val="${k}" aria-pressed="${String(p.household)===k}">${l}</button>`).join('')}</div>`)
+      + q('📊','Current eating style','How plant-based are you currently?', optList('profile.current', LABEL.current));
+  }
+  if(step===2) body = q('🎯','Goal','What are you working toward?', optList('profile.goal', LABEL.goal));
+  if(step===3) body = q('🐢','Transition preference','How would you like to transition?', optList('profile.transition', LABEL.transition));
+  if(step===4) body = q('🍳','Cooking style','How much do you like to cook?', optList('profile.cooking', LABEL.cooking));
+  if(step===5){
+    const av=p.avoid||[];
+    body = `<div class="q"><div class="qh"><span aria-hidden="true">🚫</span>Foods to avoid</div><p class="hint" style="margin:.2em 0 .6em">Are there foods or ingredients you avoid? Optional. Select anything you don't want included in your suggestions.</p>
+      ${AVOID.map(x=>{const on=av.includes(x.id); return `<button class="opt sq ${on?'on':''}" data-act="avoid" data-val="${x.id}" aria-pressed="${on}"><span class="dot">${on?'✓':''}</span>${x.label}</button>`;}).join('')}
+      <div class="card" style="margin-top:8px;padding:14px"><label class="qlabel" for="avc">Other (add your own)</label><div class="row" style="gap:8px"><input id="avc" type="text" placeholder="Type here…" data-enter="addAvoid"><button class="btn sm" data-act="addAvoid">Add</button></div>
+      ${(p.avoidCustom||[]).length?`<div class="chips" style="margin-top:10px">${p.avoidCustom.map((w,i)=>`<button class="chip on" data-act="rmAvoid" data-i="${i}" aria-label="Remove ${esc(w)}">${esc(w)} ✕</button>`).join('')}</div>`:''}</div>
+      <button class="opt sq ${p.avoidNone?'on':''}" data-act="avoidNone" aria-pressed="${!!p.avoidNone}"><span class="dot">${p.avoidNone?'✓':''}</span>None of these</button>
+      <div class="note" style="margin-top:14px"><span class="i">ℹ️</span><span>${LABEL_DISCLAIMER}</span></div></div>`;
+  }
+  if(step===6){
+    const en=p.enjoy||[];
+    const all=[...new Set([...ENJOY,...en])];
+    body = q('😋','Foods I enjoy','Pick foods you already like. We\'ll point you toward familiar options instead of reinventing how you eat.',
+      `<div class="chips">${all.map(f=>`<button class="chip ${en.includes(f)?'on':''}" data-act="toggle" data-path="profile.enjoy" data-val="${esc(f)}" aria-pressed="${en.includes(f)}">${esc(f)}</button>`).join('')}</div>
+       <div class="row" style="gap:8px;margin-top:12px"><input type="text" id="enc" placeholder="Add another food" aria-label="Add a food you enjoy" data-enter="addEnjoy"><button class="btn sm" data-act="addEnjoy">Add</button></div>`);
+  }
+  if(step===7){
+    body = q('🧩','Biggest challenge',"What's making plant-based eating difficult? Choose any that apply.", optList('profile.challenge', LABEL.challenge, true)
+      + ((p.challenge||[]).includes('other')?`<input type="text" style="margin-top:10px" value="${esc(p.challengeOther)}" data-bind="profile.challengeOther" placeholder="Tell us more (optional)" aria-label="Other challenge">`:''));
+  }
+  const pct = Math.round(step/PSTEPS*100);
+  const editing = p.completed;
+  return `<div class="wizard-top"><button class="back" data-act="back" data-to="${step>1?'profile/'+(step-1):(editing?'profile':'home')}" aria-label="Back">←</button><div class="progress-top"><i style="width:${pct}%"></i></div><span class="ct">${step} of ${PSTEPS}</span>${step<PSTEPS?`<a class="btn ghost sm" href="#/profile/${step+1}">Skip</a>`:''}</div>
+    ${step===1?`<h1>My Plant-Based Profile</h1><p class="lede">Complete this once. We'll use it to personalize your experience.</p>`:''}
+    ${body}
+    <div class="row" style="margin-top:24px;gap:10px">
+      ${step>1?`<a class="btn sec" href="#/profile/${step-1}">← Back</a>`:''}
+      ${step<PSTEPS ? `<a class="btn" style="flex:1" href="#/profile/${step+1}">Next →</a>` : `<button class="btn" style="flex:1" data-act="saveProfile">Save my profile</button>`}
+    </div>
+    ${editing && step<PSTEPS?`<button class="btn ghost block" style="margin-top:8px" data-act="saveProfile">Save and return to profile</button>`:''}`;
+};
+function profileSummary(){
+  const p=P();
+  const avoid=[...(p.avoid||[]).map(a=>AVOID.find(x=>x.id===a).label),...(p.avoidCustom||[])];
+  const rows=[
+    [1,'Household',p.household?LABEL.household[p.household]+(p.household==5?' people':p.household==1?' person':' people'):'Not set'],
+    [1,'Current eating style',LABEL.current[p.current]||'Not set'],
+    [2,'Goal',LABEL.goal[p.goal]||'Not set'],
+    [3,'Transition',LABEL.transition[p.transition]||'Not set'],
+    [4,'Cooking style',LABEL.cooking[p.cooking]||'Not set'],
+    [5,'Foods to avoid',avoid.length?avoid.join(', '):(p.avoidNone?'None':'Not set')],
+    [6,'Foods I enjoy',(p.enjoy||[]).join(', ')||'Not set'],
+    [7,'Biggest challenge',(p.challenge||[]).map(c=>c==='other'&&p.challengeOther?p.challengeOther:LABEL.challenge[c]).join(', ')||'Not set']
+  ];
+  return topBar('My Plant-Based Profile','home') + `<p class="lede">Every tool uses these answers. Change anything whenever you like.</p>
+    <div class="card">${rows.map(([s,l,v],i)=>`<div class="row" style="padding:10px 0;${i?'border-top:1px solid var(--line)':''}"><div style="flex:1"><div class="hint">${l}</div><div style="font-weight:600">${esc(v)}</div></div><a class="btn ghost sm" href="#/profile/${s}" aria-label="Edit ${l}">Edit</a></div>`).join('')}</div>
+    <div class="note" style="margin-top:14px"><span class="i">ℹ️</span><span>${LABEL_DISCLAIMER}</span></div>`;
+}
+
+/* ---------- Transition plan ---------- */
+VIEWS.plan = a => {
+  const ps=planStats();
+  if(a[0]!=null && ps.st[+a[0]]) return stageView(ps.st[+a[0]]);
+  const p=P();
+  const approach = p.transition==='all' ? `<div class="note" style="margin-bottom:12px"><span class="i">⚡</span><span>You chose to transition all at once. Work on stages 1 to 3 together in your first week, then move through the rest.</span></div>`
+    : (p.current==='mostly'||p.current==='full') ? `<div class="note" style="margin-bottom:12px"><span class="i">✅</span><span>You're already ${p.current==='full'?'fully':'mostly'} plant-based. Mark any stage you've already got down as done and focus on what's left.</span></div>` : '';
+  return topBar('My Transition Plan','home') + `<p class="lede">Based on your profile, here's a practical plan to help you reach your goal. Move at your own pace. Eating something non-plant-based never resets your progress.</p>
+    ${profileNudge()}${approach}
+    ${ps.st.map(s=>`<a class="stage ${s.complete?'done':''}" href="#/plan/${s.i}"><span class="num" style="background:${STAGE_COLORS[s.i]}">${s.complete?'✓':s.i+1}</span><span style="flex:1"><b>${esc(s.n)}</b><br><span class="hint">${esc(s.d)}</span><br><span class="hint" style="font-size:.8rem">${s.complete?'All steps done':`${s.done} of ${s.total} steps done`}</span></span><span class="chev" aria-hidden="true">›</span></a>`).join('')}
+    <div class="card" style="margin-top:14px"><h3 style="color:var(--green)">Your progress</h3><p class="hint" style="margin:.2em 0 .6em">${ps.done} of ${ps.total} steps done · ${ps.stagesDone} of 6 stages complete</p><div class="row"><div class="bar" style="flex:1"><i style="width:${ps.pct}%"></i></div><b>${ps.pct}%</b></div></div>`;
+};
+function stageView(s){
+  const easyPick = `<div class="chips" style="margin-top:8px">${[['b','Breakfast'],['l','Lunch'],['d','Dinner'],['s','Snacks']].map(([k,l])=>`<button class="chip ${S.plan.easyMeal===k?'on':''}" data-act="easyMeal" data-val="${k}" aria-pressed="${S.plan.easyMeal===k}">${l}</button>`).join('')}</div>`;
+  const left=s.total-s.done;
+  const status = s.complete
+    ? `<div class="note" style="background:var(--green-xl);margin-bottom:12px"><span class="i">🎉</span><span><b>Stage complete!</b> Every step is checked off. Head back to your plan and pick what to work on next.</span></div>`
+    : `<div class="note" style="margin-bottom:12px"><span class="i">☑️</span><span>Check off every step to finish this stage. ${s.done?`<b>${left} step${left>1?'s':''} to go.</b>`:'Go in any order you like.'}</span></div>`;
+  return topBar(s.n,'plan','Stage '+(s.i+1)+' of 6') + `<p class="lede">${esc(s.d)}</p>
+    ${status}
+    <div class="card">
+      <div class="row" style="margin-bottom:6px"><div class="bar" style="flex:1"><i style="width:${Math.round(s.done/s.total*100)}%"></i></div><span class="hint">${s.done}/${s.total}</span></div>
+      ${s.tasks.map(t=>{const on=!!S.plan.done[t.id]; return `<div class="task ${on?'on':''}"><button class="check ${on?'on':''}" data-act="task" data-id="${t.id}" aria-pressed="${on}" aria-label="Mark ${esc(t.t)} ${on?'not done':'done'}">${on?'✓':''}</button><div class="tt"><span>${esc(t.t)}</span>${t.pick?easyPick:''}${t.link?`<div><a href="#/${t.link}" style="font-size:.9rem">Open ${esc(t.link.startsWith('article')?'guide':(TOOLS.find(x=>x.id===t.link)||{}).n)} →</a></div>`:''}</div></div>`;}).join('')}
+    </div>
+    <div style="margin-top:14px;display:grid;gap:8px">
+      <a class="btn block" href="#/plan">← Back to my plan</a>
+      ${s.complete?'':`<button class="btn ghost block" data-act="stageAll" data-i="${s.i}">Mark whole stage done</button>`}
+    </div>
+    <p class="hint" style="margin-top:14px">No deadlines. Come back to this stage any time.</p>`;
+}
+
+/* ---------- What does plant-based mean ---------- */
+VIEWS.meaning = () => {
+  const plant=[['🍎','Fruits'],['🥦','Vegetables'],['🌾','Grains'],['🫘','Beans and legumes'],['🥜','Nuts and seeds'],['🥛','Plant milks'],['🧈','Tofu and tempeh'],['🍔','Plant-based alternatives']];
+  const animal=[['🥩','Meat'],['🍗','Poultry'],['🐟','Fish and seafood'],['🧀','Dairy'],['🥚','Eggs'],['🍯','Other animal-derived ingredients (such as honey and gelatin)']];
+  const unsure=[
+    ['Whey and casein','Both come from milk. They show up in protein bars, some breads and some "non-dairy" creamers.'],
+    ['Gelatin','Made from animal parts. Found in gummy candy, marshmallows and some yogurts.'],
+    ['Honey','Made by bees. Many people eating plant-based choose maple or agave instead.'],
+    ['Albumin','Usually egg white protein.'],
+    ['Anchovies','Often hidden in Caesar dressing and Worcestershire sauce.'],
+    ['Lard and ghee','Lard is pork fat. Ghee is clarified butter.'],
+    ['Lactic acid','Despite the name, usually made from plants, not milk.'],
+    ['Cocoa butter','Plant-based. It comes from cacao beans, not dairy.'],
+    ['Coconut milk and "cream of coconut"','Plant-based.'],
+    ['"Dairy-free" or "non-dairy"','Not always the same thing. Some non-dairy products still contain milk proteins, so check the ingredients.']
+  ];
+  return topBar('What Does Plant-Based Mean?','cat/start') + `<p class="lede">In this system, plant-based eating means building your meals from foods that come from plants. How far you take it is up to you.</p>
+    <h2>Plant-based foods</h2><div class="grid2 keep" style="margin:10px 0 22px">${plant.map(([e,n])=>`<div class="row card" style="padding:12px"><span class="plate" style="width:44px;height:44px;font-size:1.3rem" aria-hidden="true">${e}</span><b style="font-size:.95rem">${n}</b></div>`).join('')}</div>
+    <h2>Animal-derived foods</h2><p class="hint">These are the foods a plant-based meal leaves out or replaces.</p><div class="grid2 keep" style="margin:10px 0 22px">${animal.map(([e,n])=>`<div class="row card" style="padding:12px"><span class="plate" style="width:44px;height:44px;font-size:1.3rem;background:var(--sun-l)" aria-hidden="true">${e}</span><span style="font-size:.95rem;font-weight:600">${n}</span></div>`).join('')}</div>
+    <h2>Not sure about this ingredient?</h2><p class="hint">Common ingredients that are easy to mix up.</p>
+    <div class="stack" style="margin-top:10px">${unsure.map(([n,d])=>`<details class="card"><summary>${esc(n)}</summary><p class="hint" style="margin-top:8px">${esc(d)}</p></details>`).join('')}</div>
+    <p style="margin-top:16px"><a href="#/article/labels">Read: Reading food labels →</a></p>`;
+};
+
+/* ---------- Swap ---------- */
+function swapPicker(base){
+  return `${profileNudge()}<h3 style="margin:10px 0 4px">What are you replacing or missing?</h3><p class="hint" style="margin:0 0 8px">Tap a food to see every plant-based option for it.</p>
+    ${Object.entries(SWAPS).map(([k,v])=>`<button class="opt" data-act="go" data-to="${base}/${k}"><span class="plate" style="width:42px;height:42px;font-size:1.3rem" aria-hidden="true">${v.e}</span><span style="flex:1;font-weight:600">${v.n}</span><span aria-hidden="true" style="color:var(--muted,#888);font-size:1.3rem">›</span></button>`).join('')}`;
+}
+function swapItem(it, target, budget){
+  const type = it.kind==='product' ? 'product' : 'swap';
+  const title = `${it.n} (for ${SWAPS[target].n.toLowerCase()})`;
+  const tags = budget ? [costWord(it.cost), it.conv===3?'Ready to use':it.conv===2?'Some prep':'Requires cooking', ...it.t.filter(x=>!/cost|Ready|Requires/i.test(x))] : it.t;
+  return `<div class="item"><span class="plate" aria-hidden="true">${it.e}</span><div class="body"><div class="t">${esc(it.n)}</div><div>${tags.map((x,i)=>`<span class="pill ${budget&&i===0?'warm':''}">${esc(x)}</span>`).join('')}</div><div class="d">${esc(it.d)}</div></div>${heart(type,title,it.d)}</div>`;
+}
+VIEWS.swap = a => {
+  if(a[0] && SWAPS[a[0]]){
+    const t=a[0];
+    const {kept,labels}=filterList(SWAPS[t].items);
+    const sorted=kept;
+    return topBar(SWAPS[t].n+' alternatives','swap') + `<p class="lede">${esc(SWAPS[t].intro||'')}</p>
+      <div class="card" style="background:var(--green-xl);margin-bottom:12px"><b>💡 Budget tip</b><p class="hint" style="margin-bottom:0">${esc(BUDGET_TIPS[t])}</p></div>
+      ${excludedNote(labels)}<div style="margin-top:12px">${sorted.map(i=>swapItem(i,t,true)).join('') || '<div class="empty">Everything here conflicts with your foods to avoid.</div>'}</div>
+      <div class="card" style="margin-top:14px;background:var(--green-xl)"><b>Missing a food is normal.</b><p class="hint" style="margin-bottom:0">It doesn't mean you're doing it wrong. Try an option or two, keep what works, and come back to the rest later.</p></div>
+      <p class="hint" style="margin-top:14px">The closest matches to the real thing are listed first, with simpler swaps further down. Cost labels are general comparisons, not prices. Food prices vary by store, location, season and brand.</p>`;
+  }
+  return topBar('Swap What I Already Eat','cat/swap') + `<p class="lede">Choose a food you eat now, or one you miss, and see all of its plant-based alternatives.</p>` + swapPicker('swap');
+};
+VIEWS.bswap = a => VIEWS.swap(a);
+
+/* ---------- Plant-base my meal ---------- */
+function enjoysMeal(name){ return (P().enjoy||[]).some(e=>e.toLowerCase().replace(/s$/,'')===name.toLowerCase().replace(/s$/,'') || name.toLowerCase().includes(e.toLowerCase().replace(/s$/,''))); }
+VIEWS.mymeal = a => {
+  if(a[0] && MEALS[a[0]]){
+    const m=MEALS[a[0]]; const {kept,labels}=filterList(m.items);
+    return topBar('Plant-based '+m.n.toLowerCase(),'mymeal') + `<p class="lede">Don't completely relearn how to eat. Keep what you love about ${esc(m.n.toLowerCase())} and change one or two parts.</p>${excludedNote(labels)}
+      <div style="margin-top:12px">${kept.map(i=>`<div class="item"><span class="plate" aria-hidden="true">${i.t.includes('Tip')?'💡':m.e}</span><div class="body"><div class="t">${esc(i.n)}</div><div>${i.t.map(x=>`<span class="pill ${x==='Tip'?'warm':''}">${esc(x)}</span>`).join('')}</div><div class="d">${esc(i.d)}</div></div>${i.t.includes('Tip')?'':heart('meal',m.n+': '+i.n,i.d)}</div>`).join('')}</div>`;
+  }
+  const keys=Object.keys(MEALS).sort((x,y)=>enjoysMeal(MEALS[y].n)-enjoysMeal(MEALS[x].n));
+  return topBar('Plant-Base My Meal','cat/swap') + `<p class="lede">What meal do you already eat? Start with meals you already understand.</p>${profileNudge()}
+    <div class="grid2 keep">${keys.map(k=>`<a class="cat" href="#/mymeal/${k}"><span class="ic" style="background:var(--soft)" aria-hidden="true">${MEALS[k].e}</span><span><b style="letter-spacing:0">${MEALS[k].n}</b>${enjoysMeal(MEALS[k].n)?'<span>You enjoy this</span>':''}</span></a>`).join('')}</div>`;
+};
+
+/* ---------- I miss ---------- */
+VIEWS.miss = a => { const map={burgers:'patties',creamy:'cream'}; const k=a[0]&&(map[a[0]]||a[0]); return VIEWS.swap(SWAPS[k]?[k]:[]); };
+
+/* ---------- Pantry ---------- */
+function pantryVisible(){ const ck=cooking(); return PANTRY.filter(i=>allowed(i) && (ui.pantryAll || i.lv.includes(ck))); }
+VIEWS.pantry = () => {
+  const vis = pantryVisible();
+  const {labels}=filterList(PANTRY);
+  const counts={have:0,want:0,no:0}; Object.values(S.pantry).forEach(v=>{ if(counts[v]!=null) counts[v]++; });
+  const wantNotListed = PANTRY.filter(i=>S.pantry[i.id]==='want' && allowed(i) && !S.grocery.items.some(g=>g.n.toLowerCase()===i.n.toLowerCase())).length;
+  return topBar('Plant-Based Pantry Builder','cat/shop') + `<p class="lede">A starter pantry picked for ${P().cooking!=null?'<b>'+esc(LABEL.cooking[P().cooking].toLowerCase())+'</b>':'how you cook'}. Mark what you already have and what you want to buy.</p>
+    ${profileNudge()}${excludedNote(labels)}
+    <div class="grid2 keep" style="grid-template-columns:repeat(3,1fr);margin:12px 0"><div class="stat"><b>${counts.have}</b><span>Already have</span></div><div class="stat"><b>${counts.want}</b><span>Want to buy</span></div><div class="stat"><b>${counts.no}</b><span>Not interested</span></div></div>
+    <button class="btn block" data-act="pantryToList" ${wantNotListed?'':'disabled'}>${wantNotListed?`Add ${wantNotListed} "want to buy" item${wantNotListed>1?'s':''} to my grocery list`:'Your "want to buy" items are on your list'}</button>
+    <label class="row hint" style="margin:14px 0 4px;gap:8px"><input type="checkbox" data-act="pantryAll" ${ui.pantryAll?'checked':''}> Show items for every cooking style</label>
+    ${PANTRY_CATS.map(c=>{ const items=vis.filter(i=>i.cat===c); if(!items.length) return ''; return `<h3 style="margin:20px 0 8px">${c}</h3>`+items.map(i=>{const v=S.pantry[i.id]; return `<div class="item" style="align-items:center"><span class="plate" style="width:46px;height:46px;font-size:1.4rem" aria-hidden="true">${i.e}</span><div class="body"><div class="t">${esc(i.n)}</div><div class="pantry3" role="group" aria-label="${esc(i.n)}">${[['have','Already have'],['want','Want to buy'],['no','Not interested']].map(([k,l])=>`<button class="${k} ${v===k?'on':''}" data-act="pantry" data-id="${i.id}" data-val="${k}" aria-pressed="${v===k}">${l}</button>`).join('')}</div></div></div>`;}).join(''); }).join('')}`;
+};
+
+/* ---------- Grocery list ---------- */
+function addGrocery(n, sec){
+  n=(n||'').trim(); if(!n) return false;
+  if(S.grocery.items.some(g=>g.n.toLowerCase()===n.toLowerCase())) return false;
+  S.grocery.items.push({id:uid(), n, sec:SECTIONS.includes(sec)?sec:'Other', done:false}); return true;
+}
+function guessSection(n){ const p=PANTRY.find(i=>i.n.toLowerCase()===n.toLowerCase()); return p?p.sec:'Other'; }
+VIEWS.grocery = () => {
+  const g=S.grocery, mode=ui.gmode||'all';
+  const items = mode==='todo' ? g.items.filter(i=>!i.done) : g.items;
+  const doneCount = g.items.filter(i=>i.done).length;
+  const wantNotListed = PANTRY.filter(i=>S.pantry[i.id]==='want' && allowed(i) && !g.items.some(x=>x.n.toLowerCase()===i.n.toLowerCase()));
+  const listed = n => g.items.some(x=>x.n.toLowerCase()===n.toLowerCase());
+  const freq = g.frequent.filter(f=>!listed(f.n));
+  const favStaples = S.favorites.filter(f=>f.type==='staple' && !listed(f.title));
+  const ck=cooking();
+  const suggest = PANTRY.filter(i=>allowed(i) && i.lv.includes(ck) && !listed(i.n) && !S.pantry[i.id] && i.cost<=2).slice(0,8);
+  const chip = (n,sec,label) => `<button class="chip" data-act="gadd" data-n="${esc(n)}" data-sec="${esc(sec)}">+ ${esc(label||n)}</button>`;
+  return topBar('My Grocery List','cat/shop') + `<p class="lede">Organized by store section. Your list saves automatically.</p>
+    <div class="card"><label class="qlabel" for="gname">Add an item</label>
+      <div class="row" style="gap:8px;flex-wrap:wrap"><input id="gname" type="text" placeholder="For example: spinach" style="flex:2;min-width:150px" data-enter="gAddCustom"><select id="gsec" style="flex:1;min-width:130px" aria-label="Section">${SECTIONS.map(s=>`<option>${s}</option>`).join('')}</select><button class="btn sm" data-act="gAddCustom">Add</button></div>
+    </div>
+    ${wantNotListed.length?`<button class="btn sec block" style="margin-top:12px" data-act="pantryToList">+ Add ${wantNotListed.length} item${wantNotListed.length>1?'s':''} from my pantry picks</button>`:''}
+    ${freq.length?`<p class="qlabel" style="margin-top:14px">Frequently purchased</p><div class="chips">${freq.map(f=>chip(f.n,f.sec)).join('')}</div>`:''}
+    ${favStaples.length?`<p class="qlabel" style="margin-top:14px">From your Playbook</p><div class="chips">${favStaples.map(f=>chip(f.title,guessSection(f.title))).join('')}</div>`:''}
+    ${suggest.length?`<p class="qlabel" style="margin-top:14px">Suggested for you</p><div class="chips">${suggest.map(i=>chip(i.n,i.sec)).join('')}</div>`:''}
+    <div class="tabs" style="margin-top:18px" role="group" aria-label="View"><button class="${mode==='all'?'on':''}" data-act="ui" data-key="gmode" data-val="all">By section</button><button class="${mode==='todo'?'on':''}" data-act="ui" data-key="gmode" data-val="todo">Still to get</button></div>
+    ${items.length ? SECTIONS.map(s=>{ const li=items.filter(i=>i.sec===s); if(!li.length) return ''; return `<div class="gsec"><h3>${s}</h3>${li.map(i=>{ const fq=g.frequent.some(f=>f.n.toLowerCase()===i.n.toLowerCase()); return `<div class="gitem ${i.done?'on':''}"><button class="check ${i.done?'on':''}" data-act="gcheck" data-id="${i.id}" aria-pressed="${i.done}" aria-label="Check off ${esc(i.n)}">${i.done?'✓':''}</button><span class="n">${esc(i.n)}</span><button class="iconbtn ${fq?'on':''}" data-act="gfreq" data-id="${i.id}" aria-pressed="${fq}" title="Save as frequently purchased" aria-label="${fq?'Remove from':'Save to'} frequently purchased">${fq?'★':'☆'}</button><button class="iconbtn" data-act="gdel" data-id="${i.id}" aria-label="Remove ${esc(i.n)}">✕</button></div>`;}).join('')}</div>`; }).join('')
+      : `<div class="empty" style="margin-top:6px">${mode==='todo'&&g.items.length?'Everything is checked off. Nice shop.':'Your list is empty. Add items above, or pick from your pantry.'}</div>`}
+    ${doneCount?`<button class="btn sec block" style="margin-top:16px" data-act="gclear">Clear ${doneCount} completed item${doneCount>1?'s':''}</button>`:''}
+    <p class="hint" style="margin-top:12px">Tap ☆ to save an item you buy often. It will show up as a one-tap add next time.</p>`;
+};
+
+/* ---------- Staples ---------- */
+VIEWS.staples = () => {
+  const {kept,labels}=filterList(STAPLES);
+  return topBar('Budget-Friendly Staples','cat/shop') + `<p class="lede">Foods that are generally useful for lower-cost plant-based eating, with the practical tradeoffs of each.</p>${excludedNote(labels)}
+   <div style="margin-top:12px">${kept.map(s=>{ const on=S.grocery.items.some(g=>g.n.toLowerCase()===s.n.toLowerCase()); return `<div class="item"><span class="plate" aria-hidden="true">${s.e}</span><div class="body"><div class="t">${esc(s.n)}</div><div class="d"><b style="color:var(--green)">+</b> ${esc(s.pro)}</div><div class="d"><b style="color:var(--muted)">–</b> ${esc(s.con)}</div><button class="btn ghost sm" style="padding-left:0" data-act="gadd" data-n="${esc(s.n)}" data-sec="${esc(guessSection(s.n)==='Other'?'Canned & Dry Goods':guessSection(s.n))}" ${on?'disabled':''}>${on?'On your grocery list':'+ Add to grocery list'}</button></div>${heart('staple',s.n,s.pro)}</div>`;}).join('')}</div>`;
+};
+
+/* ---------- Easy meal builder ---------- */
+VIEWS.builder = a => {
+  const f = BUILDER[a[0]] ? a[0] : 'bowl'; const fm=BUILDER[f];
+  ui.bsel = ui.bsel||{}; const sel = ui.bsel[f] = ui.bsel[f]||{};
+  const picked = fm.steps.map((s,i)=>(sel[i]||[])).flat();
+  const {labels} = filterList(fm.steps.flatMap(s=>s.o));
+  const title = fm.n+': '+picked.join(', ');
+  return topBar('Easy Meal Builder','cat/eat') + `<p class="lede">Use a simple formula to create plant-based meals you'll actually enjoy. No recipe needed.</p>
+    <div class="chips" style="margin-bottom:14px" role="group" aria-label="Meal format">${Object.entries(BUILDER).map(([k,v])=>`<a class="chip ${k===f?'on':''}" href="#/builder/${k}" style="text-decoration:none">${v.e} ${v.n}</a>`).join('')}</div>
+    ${excludedNote(labels)}
+    <div style="margin-top:12px">${fm.steps.map((s,i)=>{ const opts=s.o.filter(allowed); const cur=sel[i]||[]; return `<div class="stepper"><span class="sn">${i+1}</span><div style="flex:1"><b>${esc(s.l)}</b>${s.opt?' <span class="hint">(optional)</span>':''}${s.m?' <span class="hint">(pick any)</span>':''}${s.h?`<div class="hint">${esc(s.h)}</div>`:''}<div class="chips" style="margin-top:8px">${opts.map(o=>`<button class="chip ${cur.includes(o.n)?'on':''}" data-act="bpick" data-f="${f}" data-i="${i}" data-n="${esc(o.n)}" data-m="${s.m?1:0}" aria-pressed="${cur.includes(o.n)}">${esc(o.n)}</button>`).join('')}</div></div></div>`; }).join('')}</div>
+    ${picked.length?`<div class="combo" style="margin-top:16px"><div class="row"><span style="font-size:2rem" aria-hidden="true">${fm.e}</span><div style="flex:1"><b>Your ${esc(fm.n.toLowerCase())}</b><div class="hint">${fm.steps.map((s,i)=>(sel[i]||[]).length?`${esc(s.l)}: ${esc(sel[i].join(', '))}`:'').filter(Boolean).join('<br>')}</div></div></div>
+      <div class="row" style="gap:10px;margin-top:12px"><button class="btn" style="flex:1" data-act="saveCombo" data-f="${f}" ${isFav('meal',title)?'disabled':''}>${isFav('meal',title)?'Saved to your Playbook':'Save this combination'}</button><button class="btn sec" data-act="clearCombo" data-f="${f}">Start over</button></div></div>`
+    :`<div class="empty" style="margin-top:16px">Pick one or more parts above to build your ${esc(fm.n.toLowerCase())}.</div>`}`;
+};
+
+/* ---------- No idea ---------- */
+VIEWS.noidea = () => {
+  const n = ui.ni = ui.ni || {meal:null, eff:null, have:''};
+  const seg=(key,opts)=>`<div class="chips">${opts.map(([k,l])=>`<button class="chip ${n[key]===k?'on':''}" data-act="ni" data-key="${key}" data-val="${k}" aria-pressed="${n[key]===k}">${l}</button>`).join('')}</div>`;
+  let results='';
+  if(n.meal && n.eff!=null){
+    const maxEff = n.eff;
+    const have=(n.have||'').toLowerCase().split(/[,\n]+/).map(s=>s.trim()).filter(Boolean);
+    const cands = IDEAS.filter(i=>i.m.includes(n.meal) && i.eff<=maxEff && allowed(i));
+    const {labels}=filterList(IDEAS.filter(i=>i.m.includes(n.meal) && i.eff<=maxEff));
+    const scored = cands.map(i=>{ const hits=have.filter(h=>i.k.includes(h)||h.split(' ').some(w=>w.length>2&&i.k.includes(w))).length; return {i, s:hits*4+(i.eff===maxEff?1:0), hits}; }).sort((x,y)=>y.s-x.s).slice(0,6);
+    results = `<h3 style="margin:20px 0 8px">Ideas for you</h3>${excludedNote(labels)}<div style="margin-top:10px">` + (scored.length ? scored.map(({i,hits})=>`<div class="item"><span class="plate" aria-hidden="true">${['🍽️','🥣','🌮','🥗','🍲','🥪'][i.n.length%6]}</span><div class="body"><div class="t">${esc(i.n)}</div><div>${i.eff===0?'<span class="pill">No cooking</span>':i.eff===1?'<span class="pill">10 minutes or less</span>':'<span class="pill">Some cooking</span>'}${hits?'<span class="pill warm">Uses what you have</span>':''}</div><div class="d">${esc(i.d)}</div></div>${heart('idea',i.n,i.d)}</div>`).join('') : '<div class="empty">No ideas match all of that. Try a different cooking effort.</div>') + '</div>' + `<p style="margin-top:12px"><a href="#/builder">Want to mix and match? Try the Easy Meal Builder →</a></p>`;
+  }
+  return topBar('I Have No Idea What to Eat','cat/eat') + `<p class="lede">Answer two quick questions and get a few meal ideas. These are concepts, not recipes.</p>
+    <div class="card stack">
+      <div><span class="qlabel">Meal</span>${seg('meal',[['b','Breakfast'],['l','Lunch'],['d','Dinner'],['s','Snack']])}</div>
+      <div><span class="qlabel">Cooking effort</span>${seg('eff',[[0,'No cooking'],[1,'10 minutes or less'],[2,'Some cooking']])}</div>
+      <div class="field"><label for="nihave">What do you already have? <span class="hint">(optional)</span></label><input id="nihave" type="text" placeholder="For example: rice, black beans, salsa" value="${esc(n.have)}" data-live="ni.have"></div>
+    </div>${results}`;
+};
+
+/* ---------- Eating out ---------- */
+const EO_FIELDS=[['name','Restaurant name','input'],['options','Meals or options I can order','text'],['mods','Modifications','text'],['questions','Questions to ask','text'],['notes','Notes','text'],['fav','Favorite order','input']];
+VIEWS.eatout = a => {
+  if(a[0]==='edit'){
+    const r = S.restaurants.find(x=>x.id===a[1]) || {};
+    return topBar(r.id?'Edit restaurant notes':'New restaurant notes','eatout') + `<div class="card stack" style="margin-top:14px">${EO_FIELDS.map(([k,l,t])=>`<div class="field"><label for="eo_${k}">${l}</label>${t==='input'?`<input id="eo_${k}" type="text" value="${esc(r[k]||'')}">`:`<textarea id="eo_${k}">${esc(r[k]||'')}</textarea>`}</div>`).join('')}</div>
+      <div class="row" style="gap:10px;margin-top:14px"><button class="btn" style="flex:1" data-act="eoSave" data-id="${esc(r.id||'')}">Save notes</button>${r.id?`<button class="btn sec" data-act="eoDel" data-id="${r.id}">Delete</button>`:''}</div>`;
+  }
+  const prompts=['Check the menu beforehand','Identify naturally plant-based dishes','Look for customizable meals (bowls, burritos, pasta, stir-fry)','Decide what ingredients you may want to ask about','Choose a backup option'];
+  ui.eo = ui.eo||{};
+  return topBar('Eating Out Planner','cat/eat') + `<p class="lede">No restaurant database needed. A few minutes of planning makes ordering much easier.</p>
+    <div class="card"><h3>Before you go</h3>${prompts.map((p,i)=>`<div class="task ${ui.eo[i]?'on':''}"><button class="check ${ui.eo[i]?'on':''}" data-act="eoPrompt" data-i="${i}" aria-pressed="${!!ui.eo[i]}" aria-label="${esc(p)}">${ui.eo[i]?'✓':''}</button><div class="tt"><span>${esc(p)}</span></div></div>`).join('')}</div>
+    <div class="row" style="justify-content:space-between;margin:22px 0 8px"><h3>My restaurant notes</h3><a class="btn sm" href="#/eatout/edit/new">+ Add</a></div>
+    ${S.restaurants.length ? S.restaurants.map(r=>`<a class="item" style="text-decoration:none;color:inherit" href="#/eatout/edit/${r.id}"><span class="plate" aria-hidden="true">🍽️</span><div class="body"><div class="t">${esc(r.name||'Untitled')}</div>${r.fav?`<div class="d"><b>Favorite order:</b> ${esc(r.fav)}</div>`:''}${r.options?`<div class="d">${esc(r.options).slice(0,120)}</div>`:''}</div><span class="chev" aria-hidden="true">›</span></a>`).join('') : `<div class="empty">Save notes for places you go often, so next time you already know what to order.</div>`}`;
+};
+
+/* ---------- Social situations ---------- */
+const SITUATIONS={family:['👨‍👩‍👧','Family meal'],holiday:['🎄','Holiday'],party:['🎉','Party'],work:['💼','Work event'],travel:['✈️','Travel'],cooked:['🧑‍🍳','Someone else is cooking']};
+const SOCIAL_QS=[['before','Should I eat beforehand?'],['bring','Can I bring something?'],['modify','Can the meal be modified?'],['explain','Do I want to explain my eating preferences? If so, what will I say?'],['backup','What is my backup option?']];
+VIEWS.social = a => {
+  if(a[0]==='edit'){
+    const r = S.social.find(x=>x.id===a[1]) || {type:a[2]||'family'};
+    return topBar(r.id?'Edit plan':'Plan for: '+SITUATIONS[r.type][1].toLowerCase(),'social') + `<p class="lede">Think it through ahead of time. There are no wrong answers here.</p>
+      <div class="card stack"><div class="field"><label for="so_title">What's the occasion?</label><input id="so_title" type="text" value="${esc(r.title||'')}" placeholder="For example: Thanksgiving at Mom's"></div>
+      <div class="field"><label for="so_type">Situation</label><select id="so_type">${Object.entries(SITUATIONS).map(([k,[e,l]])=>`<option value="${k}" ${r.type===k?'selected':''}>${e} ${l}</option>`).join('')}</select></div>
+      ${SOCIAL_QS.map(([k,l])=>`<div class="field"><label for="so_${k}">${l}</label><textarea id="so_${k}">${esc(r[k]||'')}</textarea></div>`).join('')}</div>
+      <div class="row" style="gap:10px;margin-top:14px"><button class="btn" style="flex:1" data-act="soSave" data-id="${esc(r.id||'')}">Save plan</button>${r.id?`<button class="btn sec" data-act="soDel" data-id="${r.id}">Delete</button>`:''}</div>`;
+  }
+  return topBar('Social Situations Planner','cat/eat') + `<p class="lede">Family meals, holidays, work events and travel are easier with a small plan. Pick a situation to start.</p>
+    <div class="grid2 keep">${Object.entries(SITUATIONS).map(([k,[e,l]])=>`<a class="cat" href="#/social/edit/new/${k}"><span class="ic" style="background:var(--soft)" aria-hidden="true">${e}</span><span><b style="letter-spacing:0">${l}</b></span></a>`).join('')}</div>
+    <h3 style="margin:22px 0 8px">My plans</h3>
+    ${S.social.length ? S.social.map(r=>`<a class="item" style="text-decoration:none;color:inherit" href="#/social/edit/${r.id}"><span class="plate" aria-hidden="true">${SITUATIONS[r.type]?SITUATIONS[r.type][0]:'📝'}</span><div class="body"><div class="t">${esc(r.title||SITUATIONS[r.type][1])}</div>${r.backup?`<div class="d"><b>Backup:</b> ${esc(r.backup)}</div>`:''}</div><span class="chev" aria-hidden="true">›</span></a>`).join('') : `<div class="empty">Your saved plans will appear here.</div>`}`;
+};
+
+/* ---------- Progress ---------- */
+const MILESTONES = [
+ {id:'breakfast',e:'🥣',n:'First plant-based breakfast'},
+ {id:'day',e:'🌞',n:'First full plant-based day'},
+ {id:'five',e:'🍽️',n:'Found five meals I enjoy',auto:()=>S.favorites.filter(f=>['meal','idea'].includes(f.type)).length>=5},
+ {id:'pantry',e:'🥫',n:'Built my starter pantry',auto:()=>Object.values(S.pantry).filter(v=>v==='have'||v==='want').length>=10 || !!S.plan.done.s3a},
+ {id:'shop',e:'🛒',n:'Completed my first grocery shop',auto:()=>!!S.plan.done.s3d},
+ {id:'restaurant',e:'🍴',n:'Found an easy restaurant order',auto:()=>S.restaurants.some(r=>(r.fav||'').trim())},
+ {id:'goal',e:'🎯',n:'Reached my personal plant-based goal'}
+];
+function weekKey(d){ d=new Date(d||Date.now()); const day=(d.getDay()+6)%7; d.setDate(d.getDate()-day); d.setHours(0,0,0,0); return d.toISOString().slice(0,10); }
+function achieved(m){ return !!((m.auto&&m.auto()) || S.progress.m[m.id]); }
+VIEWS.progress = () => {
+  const ps=planStats();
+  const done = MILESTONES.filter(achieved).length + ps.stagesDone;
+  const wk=weekKey(); const cur=S.progress.weeks[wk]??'';
+  const keys=[...Array(8)].map((_,i)=>{ const d=new Date(); d.setDate(d.getDate()-7*(7-i)); return weekKey(d); });
+  const vals=keys.map(k=>Number(S.progress.weeks[k])||0); const max=Math.max(7,...vals);
+  const total=Object.values(S.progress.weeks).reduce((a,v)=>a+(Number(v)||0),0);
+  return topBar('Plant-Based Progress','cat/maintain') + `<p class="lede">Your progress is everything you've built so far. It only adds up. A non-plant-based meal never erases it.</p>
+    <div class="grid2 keep"><div class="stat"><b>${done}</b><span>accomplishments</span></div><div class="stat"><b>${ps.stagesDone} of 6</b><span>transition stages</span></div></div>
+    <div class="card" style="margin-top:14px"><h3>Plant-based meals this week</h3><p class="hint">Optional. Log it if it's helpful to you.</p>
+      <div class="row" style="gap:10px"><input type="number" min="0" max="50" style="max-width:120px" value="${esc(cur)}" data-bind="progress.weeks.${wk}" data-type="num" aria-label="Plant-based meals this week"><span class="hint">${total?total+' meals logged in total':''}</span></div>
+      ${vals.some(v=>v)?`<div class="weeks" aria-label="Last 8 weeks">${vals.map((v,i)=>`<div class="${i===7?'cur':''}" style="height:${Math.max(4,v/max*100)}%" title="${v} meals"></div>`).join('')}</div><p class="hint" style="font-size:.8rem;margin-top:4px">Last 8 weeks</p>`:''}
+    </div>
+    <h3 style="margin:20px 0 8px">Milestones</h3>
+    ${MILESTONES.map(m=>{ const on=achieved(m); const auto=m.auto&&m.auto(); return `<div class="milestone ${on?'on':''}"><span class="m" aria-hidden="true">${m.e}</span><div style="flex:1"><b>${esc(m.n)}</b>${on&&S.progress.m[m.id]&&!auto?`<div class="hint" style="font-size:.8rem">${new Date(S.progress.m[m.id]).toLocaleDateString()}</div>`:''}${auto?'<div class="hint" style="font-size:.8rem">Reached through your activity</div>':''}</div>${auto?'<span class="pill">Done</span>':`<button class="check ${on?'on':''}" data-act="mile" data-id="${m.id}" aria-pressed="${on}" aria-label="Mark ${esc(m.n)}">${on?'✓':''}</button>`}</div>`; }).join('')}
+    ${ps.st.filter(s=>s.complete).map(s=>`<div class="milestone on"><span class="m" aria-hidden="true">🌿</span><div style="flex:1"><b>Completed stage ${s.i+1}: ${esc(s.n)}</b></div><span class="pill">Done</span></div>`).join('')}
+    <p style="margin-top:16px"><a href="#/plan">Open my transition plan →</a></p>`;
+};
+
+/* ---------- Playbook ---------- */
+function playbookEntries(){
+  const out = S.favorites.map(f=>({key:'f:'+f.id, type:f.type, title:f.title, detail:f.detail}));
+  S.restaurants.filter(r=>r.fav||r.options).forEach(r=>out.push({key:'r:'+r.id, type:'eatout', title:r.name||'Restaurant', detail:r.fav?'Favorite order: '+r.fav:r.options, link:'eatout/edit/'+r.id}));
+  S.grocery.frequent.forEach((g,i)=>out.push({key:'g:'+i, type:'grocery', title:g.n, detail:'Frequently purchased · '+g.sec}));
+  S.notes.forEach(n=>out.push({key:'n:'+n.id, type:'note', title:n.t, detail:''}));
+  return out;
+}
+VIEWS.playbook = () => {
+  const f=ui.pbf||'all'; const all=playbookEntries(); const list=f==='all'?all:all.filter(e=>e.type===f);
+  const types=Object.keys(FAV_TYPES).filter(t=>all.some(e=>e.type===t));
+  const icon={staple:'🍚',swap:'🔄',meal:'🥗',idea:'💡',grocery:'🛒',product:'🛍️',eatout:'🍽️',note:'📝'};
+  return topBar('My Plant-Based Playbook','cat/maintain') + `<p class="lede">Everything you've saved across the app, in one place.</p>
+    <div class="chips" style="margin-bottom:14px"><button class="chip ${f==='all'?'on':''}" data-act="ui" data-key="pbf" data-val="all">All (${all.length})</button>${types.map(t=>`<button class="chip ${f===t?'on':''}" data-act="ui" data-key="pbf" data-val="${t}">${FAV_TYPES[t]}</button>`).join('')}</div>
+    ${list.length? list.map(e=>`<div class="item"><span class="plate" aria-hidden="true">${icon[e.type]||'♥'}</span><div class="body"><div class="hint" style="font-size:.78rem">${FAV_TYPES[e.type]}</div><div class="t">${e.link?`<a href="#/${e.link}">${esc(e.title)}</a>`:esc(e.title)}</div>${e.detail?`<div class="d">${esc(e.detail)}</div>`:''}</div>${e.link?'':`<button class="iconbtn" data-act="pbDel" data-key="${esc(e.key)}" aria-label="Remove ${esc(e.title)}">✕</button>`}</div>`).join('')
+      : `<div class="empty">Tap ♡ on swaps, staples, meal ideas and combinations to build your Playbook.</div>`}
+    <div class="card" style="margin-top:18px"><label class="qlabel" for="pnote">Add a personal note</label><textarea id="pnote" placeholder="Anything worth remembering: a product you liked, a trick that worked"></textarea><button class="btn sm" style="margin-top:8px" data-act="noteAdd">Save note</button></div>`;
+};
+
+/* ---------- Problem solver ---------- */
+VIEWS.solver = a => {
+  if(a[0] && PROBLEMS[a[0]]){
+    const p=PROBLEMS[a[0]];
+    return topBar(p.n,'solver','Problem Solver') + `<div class="card" style="margin-top:14px"><h3>Your short action plan</h3><ol style="padding-left:20px;margin:.6em 0 0">${p.plan.map(x=>`<li style="margin:.4em 0">${esc(x)}</li>`).join('')}</ol></div>
+      <h3 style="margin:20px 0 8px">Tools that help with this</h3>${p.tools.map(toolLink).join('')}`;
+  }
+  const mine = P().challenge||[];
+  const map = {what:'what',cost:'spend',cooking:'cook',time:'time',miss:'miss',household:'family',out:'out',shopping:'shop',overwhelmed:'shop'};
+  const suggested = [...new Set(mine.map(c=>map[c]).filter(Boolean))];
+  return topBar('Plant-Based Problem Solver','cat/maintain') + `<p class="lede">What's making this difficult right now? Pick one and get a short plan.</p>
+    ${Object.entries(PROBLEMS).map(([k,v])=>`<a class="toolrow" href="#/solver/${k}"><span style="flex:1"><b>${esc(v.n)}</b>${suggested.includes(k)?'<br><span class="pill warm">From your profile</span>':''}</span><span class="chev" aria-hidden="true">›</span></a>`).join('')}`;
+};
+
+/* ---------- Settings ---------- */
+VIEWS.settings = () => {
+  const th=getTheme();
+  const opt=(k,l)=>`<button class="${th===k?'on':''}" data-act="theme" data-val="${k}" aria-pressed="${th===k}">${l}</button>`;
+  const confirmReset = ui.confirmReset ? `<div class="note" style="margin-top:10px;flex-direction:column"><span><b>Clear everything?</b> This removes your profile, plan progress, Playbook, grocery list, pantry and notes from this browser. It can't be undone unless you have a backup.</span><span class="row" style="gap:8px;flex-wrap:wrap"><button class="btn sm danger" data-act="resetDo">Yes, start over</button><button class="btn sm sec" data-act="resetCancel">Cancel</button></span></div>` : '';
+  const restore = ui.restore ? `<div class="note" style="margin-top:10px;flex-direction:column"><span><b>Restore this backup?</b> Saved ${esc(ui.restore.when)}. It will replace what's in the app now.</span><span class="row" style="gap:8px;flex-wrap:wrap"><button class="btn sm" data-act="restoreDo">Yes, restore it</button><button class="btn sm sec" data-act="restoreCancel">Cancel</button></span></div>` : '';
+  return topBar('Settings','home') + `<p class="lede">Your answers and everything you save stay in this browser on this device.</p>
+    <div class="card">
+      <div class="set-row"><span class="plate" style="width:44px;height:44px;font-size:1.2rem" aria-hidden="true">👤</span><div class="body"><div class="t">My profile</div><div class="hint">Household, goals, cooking style and foods to avoid.</div></div><a class="btn sm sec" href="#/profile">Edit</a></div>
+      <div class="set-row"><span class="plate" style="width:44px;height:44px;font-size:1.2rem" aria-hidden="true">🧭</span><div class="body"><div class="t">App tour</div><div class="hint">A one-minute walkthrough of how everything works.</div></div><button class="btn sm sec" data-act="tourStart">Take the tour</button></div>
+      <div class="set-row" style="flex-wrap:wrap"><span class="plate" style="width:44px;height:44px;font-size:1.2rem" aria-hidden="true">🌗</span><div class="body"><div class="t">Appearance</div><div class="hint">Saved on this device.</div></div><div class="seg" style="flex-basis:100%">${opt('light','Light')}${opt('dark','Dark')}</div></div>
+    </div>
+    <h3 style="margin:22px 0 8px">Your data</h3>
+    <div class="card">
+      <div class="set-row"><span class="plate" style="width:44px;height:44px;font-size:1.2rem" aria-hidden="true">💾</span><div class="body"><div class="t">Back up my data</div><div class="hint">Saves a small file you can keep. Do this before clearing your browser or switching computers. Tap Back up every so often so you never lose your progress.</div></div><button class="btn sm" data-act="backup">Back up</button></div>
+      <div class="set-row" style="flex-wrap:wrap"><span class="plate" style="width:44px;height:44px;font-size:1.2rem" aria-hidden="true">📂</span><div class="body"><div class="t">Restore from backup</div><div class="hint">Choose a backup file you saved earlier.</div></div><label class="btn sm sec" style="cursor:pointer">Choose file<input type="file" accept=".json,application/json" data-restore="1" class="sr"></label>${restore?`<div style="flex-basis:100%">${restore}</div>`:''}</div>
+      <div class="set-row" style="flex-wrap:wrap"><span class="plate" style="width:44px;height:44px;font-size:1.2rem;background:var(--sun-l)" aria-hidden="true">↺</span><div class="body"><div class="t">Start over</div><div class="hint">Clear everything and begin fresh.</div></div>${ui.confirmReset?'':'<button class="btn sm sec" data-act="resetAsk">Start over</button>'}${confirmReset?`<div style="flex-basis:100%">${confirmReset}</div>`:''}</div>
+    </div>
+    <h3 style="margin:22px 0 8px">About</h3>
+    <div class="card">
+      <div class="set-row"><span class="plate" style="width:44px;height:44px;font-size:1.2rem" aria-hidden="true">🌿</span><div class="body"><div class="t">Plant-Based Transition System</div><div class="hint">Version ${APP_VERSION}</div></div></div>
+      <p class="hint" style="margin:12px 0 0">This app shares general food ideas, not medical or nutrition advice. Always check product labels for your own dietary needs.</p>
+    </div>
+    <p class="copyline">${COPYRIGHT}</p>`;
+};
+
+/* ---------- Resources ---------- */
+VIEWS.library = () => topBar('Plant-Based Starter Library','cat/resources') + `<p class="lede">Short guides for getting started. Each one takes a couple of minutes to read.</p>` +
+  ARTICLES.map(x=>`<a class="toolrow" href="#/article/${x.id}"><span class="plate" aria-hidden="true">${x.e}</span><b style="flex:1">${esc(x.n)}</b><span class="chev" aria-hidden="true">›</span></a>`).join('');
+VIEWS.article = a => { const x=ARTICLES.find(y=>y.id===a[0])||ARTICLES[0]; return topBar(x.n,'library','Starter Library') + `<div class="art" style="margin-top:12px">${x.body}</div><p style="margin-top:20px"><a href="#/library">← All guides</a></p>`; };
+VIEWS.recipes = () => {
+  const acc = Object.assign({}, RESOURCE_ACCESS_DEFAULT, S.access||{});
+  const status = {coming:['Coming soon','warm'],included:['Included',''],owned:['Owned',''],locked:['Available separately','warm']};
+  return topBar('Recipe Resources','cat/resources') + `<p class="lede">Recipe collections that go with your transition system.</p>
+    ${RECIPE_RESOURCES.map(r=>{ const s=status[acc[r.id]]||status.coming; const open=acc[r.id]==='included'||acc[r.id]==='owned'; return `<div class="item" style="align-items:center"><span class="plate lg" aria-hidden="true">${r.e}</span><div class="body"><div class="t">${esc(r.n)}</div><div class="d">${esc(r.d)}</div><span class="pill ${s[1]}">${s[0]}</span></div>${open?'<button class="btn sm">Open</button>':''}</div>`; }).join('')}
+    <p class="hint" style="margin-top:14px">These collections will appear here as they become available.</p>`;
+};
+
+/* =========================================================
+   EVENTS
+   ========================================================= */
+const ACT = {
+  back: el => go(el.dataset.to),
+  go: el => go(el.dataset.to),
+  ui: el => { ui[el.dataset.key]=el.dataset.val; render(); },
+  set: el => { const v=el.dataset.val; setPath(S, el.dataset.path, /^\d+$/.test(v)&&/household|cooking/.test(el.dataset.path)?Number(v):v); save(); render(); },
+  toggle: el => { const arr=(getPath(S,el.dataset.path)||[]).slice(); const v=el.dataset.val; const i=arr.indexOf(v); i>=0?arr.splice(i,1):arr.push(v); setPath(S,el.dataset.path,arr); save(); render(); },
+  avoid: el => { const a=P().avoid; const v=el.dataset.val; const i=a.indexOf(v); i>=0?a.splice(i,1):a.push(v); P().avoidNone=false; save(); render(); },
+  avoidNone: () => { const p=P(); p.avoidNone=!p.avoidNone; if(p.avoidNone){ p.avoid=[]; p.avoidCustom=[]; } save(); render(); },
+  addAvoid: () => { const i=$('#avc'); const v=(i.value||'').trim(); if(!v) return; if(!P().avoidCustom.map(x=>x.toLowerCase()).includes(v.toLowerCase())) P().avoidCustom.push(v); P().avoidNone=false; save(); render(); $('#avc')&&$('#avc').focus(); },
+  rmAvoid: el => { P().avoidCustom.splice(+el.dataset.i,1); save(); render(); },
+  addEnjoy: () => { const i=$('#enc'); const v=(i.value||'').trim(); if(!v) return; if(!P().enjoy.includes(v)) P().enjoy.push(v); save(); render(); $('#enc')&&$('#enc').focus(); },
+  saveProfile: () => { P().completed=true; save(); toast('Profile saved'); go('profile'); },
+  task: el => { const id=el.dataset.id; S.plan.done[id]?delete S.plan.done[id]:S.plan.done[id]=Date.now(); save(); render(); },
+  stageAll: el => { stages()[+el.dataset.i].tasks.forEach(t=>{ if(!S.plan.done[t.id]) S.plan.done[t.id]=Date.now(); }); save(); toast('Stage complete'); render(); },
+  easyMeal: el => { S.plan.easyMeal=el.dataset.val; if(!S.plan.done.s1a) S.plan.done.s1a=Date.now(); save(); render(); },
+  fav: el => { toggleFav(el.dataset.type, el.dataset.title, el.dataset.detail); render(); },
+  pantry: el => { const id=el.dataset.id, v=el.dataset.val; S.pantry[id]===v ? delete S.pantry[id] : S.pantry[id]=v; save(); render(); },
+  pantryAll: el => { ui.pantryAll = el.checked; render(); },
+  pantryToList: () => { let n=0; PANTRY.filter(i=>S.pantry[i.id]==='want' && allowed(i)).forEach(i=>{ if(addGrocery(i.n,i.sec)) n++; }); save(); toast(n?`Added ${n} item${n>1?'s':''} to your grocery list`:'Already on your list'); render(); },
+  gadd: el => { if(addGrocery(el.dataset.n, el.dataset.sec)){ save(); toast('Added to your grocery list'); } render(); },
+  gAddCustom: () => { const n=$('#gname').value, s=$('#gsec').value; if(addGrocery(n,s)){ save(); ui.lastSec=s; render(); const i=$('#gname'); if(i){ i.focus(); } const sel=$('#gsec'); if(sel) sel.value=s; } else if(n.trim()) toast('Already on your list'); },
+  gcheck: el => { const it=S.grocery.items.find(i=>i.id===el.dataset.id); it.done=!it.done; save(); render(); },
+  gdel: el => { S.grocery.items=S.grocery.items.filter(i=>i.id!==el.dataset.id); save(); render(); },
+  gfreq: el => { const it=S.grocery.items.find(i=>i.id===el.dataset.id); const f=S.grocery.frequent; const i=f.findIndex(x=>x.n.toLowerCase()===it.n.toLowerCase()); if(i>=0){ f.splice(i,1); toast('Removed from frequently purchased'); } else { f.push({n:it.n,sec:it.sec}); toast('Saved as frequently purchased'); } save(); render(); },
+  gclear: () => { S.grocery.items=S.grocery.items.filter(i=>!i.done); save(); toast('Cleared completed items'); render(); },
+  bpick: el => { const f=el.dataset.f, i=el.dataset.i, n=el.dataset.n; const s=ui.bsel[f]; const cur=s[i]||[]; if(el.dataset.m==='1'){ s[i]=cur.includes(n)?cur.filter(x=>x!==n):[...cur,n]; } else { s[i]=cur.includes(n)?[]:[n]; } render(); },
+  saveCombo: el => { const f=el.dataset.f, fm=BUILDER[f], s=ui.bsel[f]; const picked=fm.steps.map((st,i)=>(s[i]||[])).flat(); const detail=fm.steps.map((st,i)=>(s[i]||[]).length?st.l+': '+s[i].join(', '):'').filter(Boolean).join(' · '); if(!isFav('meal',fm.n+': '+picked.join(', '))) toggleFav('meal', fm.n+': '+picked.join(', '), detail); render(); },
+  clearCombo: el => { ui.bsel[el.dataset.f]={}; render(); },
+  ni: el => { const k=el.dataset.key; let v=el.dataset.val; if(k==='eff') v=Number(v); ui.ni[k]=ui.ni[k]===v?null:v; render(); },
+  eoPrompt: el => { ui.eo[el.dataset.i]=!ui.eo[el.dataset.i]; render(); },
+  eoSave: el => { const r={id:el.dataset.id||uid()}; EO_FIELDS.forEach(([k])=>r[k]=($('#eo_'+k).value||'').trim()); if(!r.name){ toast('Add a restaurant name first'); return; } const i=S.restaurants.findIndex(x=>x.id===r.id); i>=0?S.restaurants[i]=r:S.restaurants.unshift(r); save(); toast('Notes saved'); go('eatout'); },
+  eoDel: el => { S.restaurants=S.restaurants.filter(r=>r.id!==el.dataset.id); save(); toast('Deleted'); go('eatout'); },
+  soSave: el => { const r={id:el.dataset.id||uid(), title:($('#so_title').value||'').trim(), type:$('#so_type').value}; SOCIAL_QS.forEach(([k])=>r[k]=($('#so_'+k).value||'').trim()); const i=S.social.findIndex(x=>x.id===r.id); i>=0?S.social[i]=r:S.social.unshift(r); save(); toast('Plan saved'); go('social'); },
+  soDel: el => { S.social=S.social.filter(r=>r.id!==el.dataset.id); save(); toast('Deleted'); go('social'); },
+  mile: el => { const id=el.dataset.id; S.progress.m[id]?delete S.progress.m[id]:S.progress.m[id]=Date.now(); save(); render(); },
+  pbDel: el => { const [t,id]=el.dataset.key.split(':'); if(t==='f') S.favorites=S.favorites.filter(f=>f.id!==id); if(t==='g') S.grocery.frequent.splice(+id,1); if(t==='n') S.notes=S.notes.filter(n=>n.id!==id); save(); render(); },
+  tourStart: () => startTour(),
+  tourNext: () => { ui.tour=Math.min(TOUR.length-1, ui.tour+1); renderTour(); },
+  tourPrev: () => { ui.tour=Math.max(0, ui.tour-1); renderTour(); },
+  tourEnd: el => endTour(el && el.dataset.to),
+  theme: el => { const t=el.dataset.val==='dark'?'dark':'light'; try{ localStorage.setItem(THEME_KEY,t); }catch(e){} S.theme=t; save(); applyTheme(t); render(); },
+  backup: () => {
+    const data = {app:'Plant-Based Transition System', productId:PRODUCT_ID, savedAt:new Date().toISOString(), state:S};
+    const blob = new Blob([JSON.stringify(data,null,1)], {type:'application/json'});
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+    a.download = 'plant-based-backup-' + new Date().toISOString().slice(0,10) + '.json';
+    document.body.appendChild(a); a.click(); setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+    toast('Backup saved to your downloads');
+  },
+  restoreDo: () => { S = migrate(ui.restore.state); ui.restore=null; save(); toast('Backup restored'); render(); },
+  restoreCancel: () => { ui.restore=null; render(); },
+  resetAsk: () => { ui.confirmReset=true; render(); },
+  resetCancel: () => { ui.confirmReset=false; render(); },
+  resetDo: () => { S = defaults(); Object.keys(ui).forEach(k=>delete ui[k]); save(); toast('Everything has been cleared'); go('home'); setTimeout(startTour, 300); },
+  noteAdd: () => { const v=($('#pnote').value||'').trim(); if(!v) return; S.notes.unshift({id:uid(),t:v,at:Date.now()}); save(); toast('Note saved'); render(); }
+};
+document.addEventListener('click', e => {
+  const el = e.target.closest('[data-act]'); if(!el) return;
+  const fn = ACT[el.dataset.act]; if(!fn) return;
+  if(el.tagName!=='INPUT') e.preventDefault();
+  fn(el, e);
+});
+document.addEventListener('input', e => {
+  const el=e.target;
+  if(el.dataset.bind){ let v=el.value; if(el.dataset.type==='num') v = v===''?null:Number(v); setPath(S, el.dataset.bind, v); save(); }
+  if(el.dataset.live){ setPath(ui, el.dataset.live, el.value); render(); }
+});
+document.addEventListener('change', e => {
+  const el=e.target;
+  if(el.dataset.restore && el.files && el.files[0]){
+    const r=new FileReader();
+    r.onload=()=>{ try{ const d=JSON.parse(r.result); const st=d&&d.state; if(!st || (d.productId&&d.productId!==PRODUCT_ID) || !st.profile) throw 0; ui.restore={state:st, when:d.savedAt?new Date(d.savedAt).toLocaleDateString():'earlier'}; render(); }catch(err){ toast("That file isn't a backup from this app"); } };
+    r.readAsText(el.files[0]); el.value=''; return;
+  }
+  if(el.dataset.bind && el.dataset.bind.startsWith('progress.')) render();
+});
+document.addEventListener('keydown', e => {
+  if(ui.tour!=null){ if(e.key==='Escape'){ endTour(); return; } if(e.key==='ArrowRight' && ui.tour<TOUR.length-1){ ui.tour++; renderTour(); return; } if(e.key==='ArrowLeft' && ui.tour>0){ ui.tour--; renderTour(); return; } }
+  if(e.key==='Enter' && e.target.dataset && e.target.dataset.enter){ e.preventDefault(); ACT[e.target.dataset.enter](e.target); }
+});
+
+/* Keep focus and caret when a live input re-renders the view */
+const _render = render;
+render = function(){
+  const ae=document.activeElement; const id=ae&&ae.id; let s=null,en=null;
+  try{ if(id && 'selectionStart' in ae){ s=ae.selectionStart; en=ae.selectionEnd; } }catch(e){}
+  _render();
+  if(id){ const el=document.getElementById(id); if(el && el!==document.activeElement){ el.focus({preventScroll:true}); try{ if(s!=null) el.setSelectionRange(s,en); }catch(e){} } }
+};
+render();
+if(!S.tourDone && !P().completed) startTour();
+</script>
+</body>
+</html>
